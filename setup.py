@@ -4,14 +4,14 @@ import os
 version = '0.1'
 
 long_description = (
-    open('README.txt').read()
+    open('README.rst').read()
     + '\n' +
     'Contributors\n'
     '============\n'
     + '\n' +
-    open('CONTRIBUTORS.txt').read()
+    open('CONTRIBUTORS.rst').read()
     + '\n' +
-    open('CHANGES.txt').read()
+    open('CHANGES.rst').read()
     + '\n')
 
 setup(name='dexterity.localrolesfield',
@@ -25,13 +25,13 @@ setup(name='dexterity.localrolesfield',
         "Framework :: Plone",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
         "Topic :: Software Development :: Libraries :: Python Modules",
         ],
       keywords='',
-      author='',
-      author_email='',
-      url='http://svn.plone.org/svn/collective/',
+      author='IMIO',
+      author_email='support@imio.be',
+      url='https://github.com/collective/',
       license='gpl',
       packages=find_packages('src'),
       package_dir={'': 'src'},
@@ -45,9 +45,5 @@ setup(name='dexterity.localrolesfield',
       extras_require={'test': ['plone.app.testing']},
       entry_points="""
       # -*- Entry points: -*-
-      [z3c.autoinclude.plugin]
-      target = plone
       """,
-      setup_requires=["PasteScript"],
-      paster_plugins=["templer.localcommands"],
       )
