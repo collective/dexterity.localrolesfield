@@ -39,7 +39,12 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
+        'Products.CMFCore',
+        'collective.z3cform.datagridfield',
         'dexterity.localroles',
+        'five.grok',
+        'plone.api',
+        'plone.app.dexterity',
         'setuptools',
     ],
     extras_require={'test': ['plone.app.testing']},
