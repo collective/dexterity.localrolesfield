@@ -7,3 +7,5 @@ install:
   - bin/buildout -c travis.cfg -q -t 3
 script:
   - bin/test
+  - bin/coverage.sh
+  - bin/code-analysis
