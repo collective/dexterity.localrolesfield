@@ -28,12 +28,12 @@ class TestAdapter(unittest.TestCase):
                                                              u'kate'])
         field_config = {
             u'private': {
-                '_editor': ('Editor', 'Reader'),
-                '_reviewer': ('Contributor', 'Reader'),
+                'editor': ('Editor', 'Reader'),
+                'reviewer': ('Contributor', 'Reader'),
             },
             u'published': {
-                '_editor': ('Reader', ),
-                '_reviewer': ('Editor', 'Contributor', 'Reader'),
+                'editor': ('Reader', ),
+                'reviewer': ('Editor', 'Contributor', 'Reader'),
             },
         }
 
@@ -138,3 +138,13 @@ class TestAdapter(unittest.TestCase):
         ]
         self.assertItemsEqual(field_values,
                               self._adapter.field_and_values_list)
+
+    def test_format_suffix(self):
+        adapter = self._adapter
+        self.assertEqual(u'', adapter._format_suffix(None))
+        self.assertEqual(u'_foo', adapter._format_suffix('foo'))
+
+    def test_format_principal(self):
+        adapter = self._adapter
+        self.assertEqual('foo', adapter._format_principal('foo', None))
+        self.assertEqual('foo_bar', adapter._format_principal('foo', 'bar'))

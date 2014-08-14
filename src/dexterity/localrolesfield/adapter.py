@@ -27,7 +27,7 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
 
     def _get_suffixes_for_principal(self, config, value, principal):
         """Return the suffixes that match the given principal"""
-        suffixes_principals = [(suffix, u'{0}{1}'.format(value, suffix or u''))
+        suffixes_principals = [(suffix, self._format_principal(value, suffix))
                                for suffix in config.keys()]
         return [s for s, p in suffixes_principals if p == principal]
 
@@ -40,8 +40,16 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
             if not state_config:
                 continue
             for suffix, roles in state_config.items():
-                suffix = suffix or u''
-                yield (u'{0}{1}'.format(value, suffix), tuple(roles))
+                yield (self._format_principal(value, suffix), tuple(roles))
+
+    @staticmethod
+    def _format_suffix(suffix):
+        if not suffix:
+            return u''
+        return u'_{0}'.format(suffix)
+
+    def _format_principal(self, principal, suffix):
+        return u'{0}{1}'.format(principal, self._format_suffix(suffix))
 
     @property
     def field_and_values_list(self):
