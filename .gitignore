@@ -16,3 +16,5 @@ lib/
 local/
 .coverage
 htmlcov
+src/*
+!src/dexterity/
