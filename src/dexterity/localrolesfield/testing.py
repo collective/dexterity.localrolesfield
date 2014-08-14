@@ -2,12 +2,14 @@
 
 from dexterity.localrolesfield.field import LocalRolesField
 from plone import api
+from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneWithPackageLayer
 from plone.app.testing import ploneSite
 from plone.dexterity.content import Item
 from plone.supermodel import model
+from plone.testing import z2
 from zope import interface
 from zope.schema import Choice
 from zope.schema.fieldproperty import FieldProperty
@@ -76,4 +78,10 @@ LOCALROLESFIELD_INTEGRATION = IntegrationTesting(
 LOCALROLESFIELD_FUNCTIONAL = FunctionalTesting(
     bases=(LOCALROLESFIELD_FIXTURE, ),
     name='dexterity.localrolesfield.layer:functional',
+)
+
+LOCALROLESFIELD_ROBOT = FunctionalTesting(
+    bases=(LOCALROLESFIELD_FIXTURE, AUTOLOGIN_LIBRARY_FIXTURE,
+           z2.ZSERVER_FIXTURE),
+    name='dexterity.localrolesfield.layer:robot',
 )
