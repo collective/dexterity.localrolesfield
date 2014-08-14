@@ -15,6 +15,12 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <adapter
+    for="plone.dexterity.interfaces.IDexterityContent"
+    provides="borg.localrole.interfaces.ILocalRoleProvider"
+    factory=".adapter.LocalRoleFieldAdapter"
+    />
+
   <include package=".browser"/>
 
 </configure>
