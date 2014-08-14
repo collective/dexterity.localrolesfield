@@ -19,8 +19,7 @@ from zope.schema import TextLine
 class ILocalRoleConfig(Interface):
     state = WorkflowState(title=LRMF(u'state'), required=True)
 
-    value = TextLine(title=_(u'suffix'), required=False,
-                      default=u'')
+    value = TextLine(title=_(u'suffix'), required=False, default=u'')
 
     roles = Role(title=LRMF(u'roles'),
                  value_type=Choice(source=plone_role_generator),
