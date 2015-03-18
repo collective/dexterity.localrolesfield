@@ -58,6 +58,14 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
         fti_schema = self.fti.lookupSchema()
         fields = [n for n, f in fti_schema.namesAndDescriptions(all=True)
                   if isinstance(f, LocalRolesField)]
+
+        # also lookup behaviors
+        for behavior_id in self.fti.behaviors:
+            behavior = getUtility(IBehavior, behavior_id).interface
+            fields.extend(
+                [n for n, f in behavior.namesAndDescriptions(all=True)
+                 if isinstance(f, LocalRolesField)])
+
         return [(f, v) for f in fields
                 for v in getattr(self.context, f) or []]
 
