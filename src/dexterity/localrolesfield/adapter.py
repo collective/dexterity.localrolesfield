@@ -2,7 +2,6 @@
 
 from borg.localrole.interfaces import ILocalRoleProvider
 from dexterity.localroles.adapter import LocalRoleAdapter
-from dexterity.localrolesfield.field import LocalRolesField
 from dexterity.localrolesfield.interfaces import IBaseLocalRoleField
 from zope.interface import implements
 from plone.behavior.interfaces import IBehavior
