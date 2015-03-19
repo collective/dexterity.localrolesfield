@@ -1,7 +1,8 @@
 # encoding: utf-8
-
-from dexterity.localrolesfield.field import LocalRolesField
+from zope.interface import alsoProvides
+from dexterity.localrolesfield.field import LocalRolesField, LocalRoleField
 from plone import api
+from plone.autoform.interfaces import IFormFieldProvider
 from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
@@ -41,6 +42,20 @@ class TestingType(Item):
     interface.implements(ITestingType)
 
     localrole_field = FieldProperty(ITestingType[u'localrole_field'])
+
+
+class TestingBehavior(model.Schema):
+
+    mono_localrole_field = LocalRoleField(
+        title=u"Mono valued local role field",
+        required=False,
+        vocabulary=SimpleVocabulary.fromValues([
+            u'john',
+            u'jane',
+            u'tom',
+            u'kate'])
+        )
+alsoProvides(TestingBehavior, IFormFieldProvider)
 
 
 class LocalRolesFieldLayer(PloneWithPackageLayer):

@@ -25,7 +25,8 @@ class TestAdapter(unittest.TestCase):
                                        title='TestLocalRoles',
                                        localrole_field=[u'mail'],
                                        localrole_user_field=[u'john',
-                                                             u'kate'])
+                                                             u'kate'],
+                                       mono_localrole_field=u'john')
         field_config = {
             u'private': {
                 'editor': ('Editor', 'Reader'),
@@ -51,15 +52,24 @@ class TestAdapter(unittest.TestCase):
                 'kate': ('Editor', ),
             },
         }
+
+        behavior_field_config = {
+            u'private': {
+                None: ('Reviewer', ),
+            },
+        }
+
         setattr(self.test_fti, 'localrole_field', field_config)
         setattr(self.test_fti, 'localrole_user_field', userfield_config)
         setattr(self.test_fti, 'localroleconfig', global_config)
+        setattr(self.test_fti, 'mono_localrole_field', behavior_field_config)
 
     def tearDown(self):
         api.content.delete(obj=self.item)
         setattr(self.test_fti, 'localrole_field', {})
         setattr(self.test_fti, 'localrole_user_field', {})
         setattr(self.test_fti, 'localroleconfig', {})
+        setattr(self.test_fti, 'mono_localrole_field', {})
         logout()
 
     @property
@@ -79,7 +89,7 @@ class TestAdapter(unittest.TestCase):
         self.assertEqual('private', api.content.get_state(obj=self.item))
         # Users
         self.assertEqual((), adapter.getRoles('foo'))
-        self.assertEqual(('Reader', ), adapter.getRoles('john'))
+        self.assertEqual(('Reader', 'Reviewer'), adapter.getRoles('john'))
         self.assertEqual((), adapter.getRoles('jane'))
         self.assertEqual((), adapter.getRoles('tom'))
         self.assertEqual(('Editor', 'Reader'), adapter.getRoles('kate'))
@@ -115,6 +125,7 @@ class TestAdapter(unittest.TestCase):
         self.assertEqual('private', api.content.get_state(obj=self.item))
         roles = [('kate', ('Editor', )),
                  (u'john', ('Reader', )),
+                 (u'john', ('Reviewer', )),
                  (u'kate', ('Reader', )),
                  (u'mail_reviewer', ('Contributor', 'Reader')),
                  (u'mail_editor', ('Editor', 'Reader'))]
@@ -135,9 +146,11 @@ class TestAdapter(unittest.TestCase):
             ('localrole_field', u'mail'),
             ('localrole_user_field', u'john'),
             ('localrole_user_field', u'kate'),
+            ('mono_localrole_field', u'john')
         ]
-        self.assertItemsEqual(field_values,
-                              self._adapter.field_and_values_list)
+        self.assertItemsEqual(
+            field_values,
+            self._adapter.field_and_values_list)
 
     def test_format_suffix(self):
         adapter = self._adapter
