@@ -1,12 +1,15 @@
 # encoding: utf-8
+from zope.component import getUtility
+from zope.interface import implements
+
+from plone.behavior.interfaces import IBehavior
+from plone.dexterity.interfaces import IDexterityFTI
 
 from borg.localrole.interfaces import ILocalRoleProvider
 from dexterity.localroles.adapter import LocalRoleAdapter
+
 from dexterity.localrolesfield.interfaces import IBaseLocalRoleField
-from zope.interface import implements
-from plone.behavior.interfaces import IBehavior
-from plone.dexterity.interfaces import IDexterityFTI
-from zope.component import getUtility
+from dexterity.localrolesfield.utils import get_localrole_fields
 
 
 class LocalRoleFieldAdapter(LocalRoleAdapter):
@@ -56,25 +59,15 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
     def field_and_values_list(self):
         """Return the id and the values of the LocalRolesField objects on the
         current context"""
-        fti_schema = self.fti.lookupSchema()
-        fields = [n for n, f in fti_schema.namesAndDescriptions(all=True)
-                  if IBaseLocalRoleField.providedBy(f)]
-
-        # also lookup behaviors
-        for behavior_id in self.fti.behaviors:
-            behavior = getUtility(IBehavior, behavior_id).interface
-            fields.extend(
-                [n for n, f in behavior.namesAndDescriptions(all=True)
-                 if IBaseLocalRoleField.providedBy(f)])
-
+        fields = get_localrole_fields(self.fti)
         field_and_values = []
-        for field in fields:
-            values = getattr(self.context, field) or []
+        for fieldname, _field in fields:
+            values = getattr(self.context, fieldname) or []
             if not isinstance(values, list):
                 values = [values]
 
             for value in values:
-                field_and_values.append((field, value))
+                field_and_values.append((fieldname, value))
 
         return field_and_values
 
