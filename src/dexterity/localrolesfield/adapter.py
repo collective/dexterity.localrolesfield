@@ -1,5 +1,5 @@
 # encoding: utf-8
-from zope.component import getUtility
+from zope.component import getUtility, ComponentLookupError
 from zope.interface import implements
 
 from plone.behavior.interfaces import IBehavior
@@ -74,7 +74,11 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
     @property
     def fti(self):
         """Return the FTI"""
-        return getUtility(IDexterityFTI, name=self.context.portal_type)
+        try:
+            return getUtility(IDexterityFTI, name=self.context.portal_type)
+        except ComponentLookupError:
+            # on site delete
+            return None
 
     def get_config(self, fieldname):
         """Return the config from FTI for a given fieldname"""

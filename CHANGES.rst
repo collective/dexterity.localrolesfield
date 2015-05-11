@@ -4,6 +4,9 @@ Changelog
 0.2 (unreleased)
 ----------------
 
+- Avoid exception on site deletion.
+  [sgeulette]
+
 - Add single value local role field.
   [cedricmessiant]
 
