@@ -3,7 +3,7 @@
 Introduction
 ============
 
-This package permits to give a local role following the content of a field and the workflow state.
+This package permits to give a local role on a content following a content field value and the workflow state.
 It uses borg.localrole.
 
 A new configuration page is added as a new tab on each dexterity type configuration.
