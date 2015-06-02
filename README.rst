@@ -3,14 +3,24 @@
 Introduction
 ============
 
-Extends dexterity.localroles:
+This package permits to give a local role following the content of a field and the workflow state.
+It uses borg.localrole.
+
+A new configuration page is added as a new tab on each dexterity type configuration.
+
+You can there define for each local role field and each state which local roles will be automatically given to the selected principal in the field.
+
+You will find in each configuration line an additional field names suffix.
+If completed, the suffix name will be added at the end of the local role field value to define a principal name.
+
+By example: if the configuration suffix is "director" and the local role field value is "group1", the local role will be given to "group1_director".
+
+This last functionality is used with the package collective.contact.plonegroup. 
+
+Technically, this package extends dexterity.localroles:
 
 * provides a principal selector field
 * extends the configuration page
-
-When giving local roles, the principal is selected by a field on the object.
-
-The assignement is then different for each object following the selected principal.
 
 This is a refactoring of collective.z3cform.rolefield.
 
