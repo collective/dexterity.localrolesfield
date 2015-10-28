@@ -54,7 +54,7 @@ class TestingBehavior(model.Schema):
             u'jane',
             u'tom',
             u'kate'])
-        )
+    )
 alsoProvides(TestingBehavior, IFormFieldProvider)
 
 

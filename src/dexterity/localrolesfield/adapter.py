@@ -2,13 +2,11 @@
 from zope.component import getUtility, ComponentLookupError
 from zope.interface import implements
 
-from plone.behavior.interfaces import IBehavior
 from plone.dexterity.interfaces import IDexterityFTI
 
 from borg.localrole.interfaces import ILocalRoleProvider
 from dexterity.localroles.adapter import LocalRoleAdapter
 
-from dexterity.localrolesfield.interfaces import IBaseLocalRoleField
 from dexterity.localrolesfield.utils import get_localrole_fields
 
 

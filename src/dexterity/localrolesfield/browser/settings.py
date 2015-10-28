@@ -13,7 +13,6 @@ from dexterity.localroles.browser.settings import Role
 from dexterity.localroles.browser.settings import WorkflowState
 from dexterity.localroles.vocabulary import plone_role_generator
 
-from dexterity.localrolesfield.field import LocalRolesField
 from dexterity.localrolesfield.utils import get_localrole_fields
 from dexterity.localrolesfield import _
 

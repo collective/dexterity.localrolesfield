@@ -3,7 +3,6 @@
 from zope.component import getUtility
 
 from plone.behavior.interfaces import IBehavior
-from plone.dexterity.interfaces import IDexterityFTI
 
 from dexterity.localrolesfield.interfaces import IBaseLocalRoleField
 
