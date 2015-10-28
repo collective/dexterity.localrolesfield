@@ -17,7 +17,7 @@ script:
   - bin/code-analysis
 
 after_success:
-  - pip install coveralls
+  - pip install coveralls==0.5
   - coveralls
 
 notifications:
