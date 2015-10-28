@@ -46,3 +46,6 @@ This package is tested using Travis CI. The current status of the add-on is :
 
 .. image:: https://api.travis-ci.org/collective/dexterity.localrolesfield.png
     :target: https://travis-ci.org/collective/dexterity.localrolesfield
+
+.. image:: https://coveralls.io/repos/collective/dexterity.localrolesfield/badge.svg?branch=master&service=github
+  :target: https://coveralls.io/github/collective/dexterity.localrolesfield?branch=master
