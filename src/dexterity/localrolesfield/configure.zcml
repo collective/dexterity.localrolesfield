@@ -22,5 +22,6 @@
     />
 
   <include package=".browser"/>
+  <include package=".upgrades"/>
 
 </configure>
