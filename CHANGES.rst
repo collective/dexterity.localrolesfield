@@ -4,7 +4,8 @@ Changelog
 0.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Configuration is now stored in one fti attribute to avoid a field name erases an existing fti attribute.
+  [sgeulette]
 
 
 0.2.1 (2015-06-02)

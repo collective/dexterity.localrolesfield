@@ -4,6 +4,7 @@ from zope.interface import implements
 
 from plone.dexterity.interfaces import IDexterityFTI
 
+from Products.CMFPlone.utils import base_hasattr
 from borg.localrole.interfaces import ILocalRoleProvider
 from dexterity.localroles.adapter import LocalRoleAdapter
 
@@ -80,4 +81,6 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
 
     def get_config(self, fieldname):
         """Return the config from FTI for a given fieldname"""
-        return getattr(self.fti, fieldname, {})
+        if not base_hasattr(self.fti, 'localroles'):
+            return {}
+        return self.fti.localroles.get(fieldname, {})

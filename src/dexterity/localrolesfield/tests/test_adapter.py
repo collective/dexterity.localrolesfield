@@ -1,7 +1,7 @@
 # encoding: utf-8
 
-from dexterity.localrolesfield import testing
-from dexterity.localrolesfield.adapter import LocalRoleFieldAdapter
+import unittest
+
 from plone import api
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
@@ -9,7 +9,9 @@ from plone.app.testing import setRoles
 from plone.app.testing import login
 from plone.app.testing import logout
 
-import unittest
+from dexterity.localrolesfield import testing
+from dexterity.localrolesfield.adapter import LocalRoleFieldAdapter
+from dexterity.localroles.utils import add_fti_configuration
 
 
 class TestAdapter(unittest.TestCase):
@@ -59,17 +61,14 @@ class TestAdapter(unittest.TestCase):
             },
         }
 
-        setattr(self.test_fti, 'localrole_field', field_config)
-        setattr(self.test_fti, 'localrole_user_field', userfield_config)
-        setattr(self.test_fti, 'localroleconfig', global_config)
-        setattr(self.test_fti, 'mono_localrole_field', behavior_field_config)
+        add_fti_configuration('testingtype', global_config, keyname='static_config')
+        add_fti_configuration('testingtype', field_config, keyname='localrole_field')
+        add_fti_configuration('testingtype', userfield_config, keyname='localrole_user_field')
+        add_fti_configuration('testingtype', behavior_field_config, keyname='mono_localrole_field')
 
     def tearDown(self):
         api.content.delete(obj=self.item)
-        setattr(self.test_fti, 'localrole_field', {})
-        setattr(self.test_fti, 'localrole_user_field', {})
-        setattr(self.test_fti, 'localroleconfig', {})
-        setattr(self.test_fti, 'mono_localrole_field', {})
+        setattr(self.test_fti, 'localroles', {})
         logout()
 
     @property
