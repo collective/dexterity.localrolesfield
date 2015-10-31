@@ -24,7 +24,7 @@ class ILocalRoleConfig(Interface):
                  value_type=Choice(source=plone_role_generator),
                  required=True)
 
-    related = Text(title=_(u'related role configuration'),
+    related = Text(title=LRMF(u'related role configuration'),
                    required=False)
 
 RelatedFieldFormatValidator = RelatedFormatValidator
