@@ -31,33 +31,33 @@ class TestAdapter(unittest.TestCase):
                                        mono_localrole_field=u'john')
         field_config = {
             u'private': {
-                'editor': ('Editor', 'Reader'),
-                'reviewer': ('Contributor', 'Reader'),
+                'editor': {'roles': ('Editor', 'Reader')},
+                'reviewer': {'roles': ('Contributor', 'Reader')},
             },
             u'published': {
-                'editor': ('Reader', ),
-                'reviewer': ('Editor', 'Contributor', 'Reader'),
+                'editor': {'roles': ('Reader', )},
+                'reviewer': {'roles': ('Editor', 'Contributor', 'Reader')},
             },
         }
 
         userfield_config = {
             u'private': {
-                None: ('Reader', ),
+                None: {'roles': ('Reader', )},
             },
             u'published': {
-                None: ('Editor', ),
+                None: {'roles': ('Editor', )},
             },
         }
 
         global_config = {
             u'private': {
-                'kate': ('Editor', ),
+                'kate': {'roles': ('Editor', )},
             },
         }
 
         behavior_field_config = {
             u'private': {
-                None: ('Reviewer', ),
+                None: {'roles': ('Reviewer', )},
             },
         }
 

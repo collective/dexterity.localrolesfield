@@ -1,15 +1,13 @@
 # encoding: utf-8
 from collective.z3cform.datagridfield import DictRow
-from z3c.form import field
+from z3c.form import field, validator
 from zope.interface import Interface
 from zope.schema import Choice
-from zope.schema import TextLine
+from zope.schema import Text, TextLine
 from dexterity.localroles import _ as LRMF
 
-from dexterity.localroles.browser.settings import LocalRoleConfigurationForm
-from dexterity.localroles.browser.settings import LocalRoleConfigurationPage
-from dexterity.localroles.browser.settings import LocalRoleList
-from dexterity.localroles.browser.settings import Role
+from dexterity.localroles.browser.settings import LocalRoleConfigurationForm, LocalRoleConfigurationPage
+from dexterity.localroles.browser.settings import LocalRoleList, RelatedFormatValidator, Role
 from dexterity.localroles.browser.settings import WorkflowState
 from dexterity.localroles.vocabulary import plone_role_generator
 
@@ -25,6 +23,12 @@ class ILocalRoleConfig(Interface):
     roles = Role(title=LRMF(u'roles'),
                  value_type=Choice(source=plone_role_generator),
                  required=True)
+
+    related = Text(title=_(u'related role configuration'),
+                   required=False)
+
+RelatedFieldFormatValidator = RelatedFormatValidator
+validator.WidgetValidatorDiscriminators(RelatedFieldFormatValidator, field=ILocalRoleConfig['related'])
 
 
 class LocalRoleFieldConfigurationForm(LocalRoleConfigurationForm):

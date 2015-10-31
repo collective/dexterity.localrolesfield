@@ -24,7 +24,7 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
             suffixes = self._get_suffixes_for_principal(config, value,
                                                         principal)
             for suffix in suffixes:
-                roles.extend(config.get(suffix))
+                roles.extend(config.get(suffix)['roles'])
 
         return tuple(roles)
 
@@ -42,8 +42,8 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
             state_config = self.get_config(field).get(self.current_state)
             if not state_config:
                 continue
-            for suffix, roles in state_config.items():
-                yield (self._format_principal(value, suffix), tuple(roles))
+            for suffix, roles_dic in state_config.items():
+                yield (self._format_principal(value, suffix), tuple(roles_dic['roles']))
 
     @staticmethod
     def _format_suffix(suffix):

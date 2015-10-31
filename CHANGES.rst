@@ -6,6 +6,8 @@ Changelog
 
 - Configuration is now stored in one fti attribute to avoid a field name erases an existing fti attribute.
   [sgeulette]
+- Add a related field to store a text configuration that will be used to set related objects local roles.
+  [sgeulette]
 
 
 0.2.1 (2015-06-02)

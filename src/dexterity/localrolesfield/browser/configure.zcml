@@ -14,4 +14,6 @@
       permission="plone.schemaeditor.ManageSchemata"
       layer="dexterity.localrolesfield.interfaces.IDexterityLocalRolesField" />
 
+  <adapter factory=".settings.RelatedFieldFormatValidator" />
+
 </configure>
