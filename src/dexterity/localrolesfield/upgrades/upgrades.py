@@ -19,5 +19,9 @@ def v2(context):
             logger.info("FTI '%s' => Copying old field config '%s': '%s'" % (name, fname, getattr(fti, fname)))
             if not base_hasattr(fti, 'localroles'):
                 setattr(fti, 'localroles', {})
-            fti.localroles[fname] = getattr(fti, fname)
+            fti.localroles[fname] = {}
+            for state_key, state_dic in getattr(fti, fname).items():
+                fti.localroles[fname][state_key] = {}
+                for principal, roles in state_dic.items():
+                    fti.localroles[fname][state_key][principal] = {'roles': roles}
             delattr(fti, fname)
