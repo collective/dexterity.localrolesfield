@@ -10,7 +10,7 @@ Changelog
   [sgeulette]
 - Add memoize on localroles fields list
   [sgeulette]
-- Change related local roles on transition
+- Change related local roles on transition, on addition
   [sgeulette]
 
 0.2.1 (2015-06-02)

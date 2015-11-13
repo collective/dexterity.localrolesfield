@@ -5,7 +5,7 @@ from plone.dexterity.interfaces import IDexterityFTI
 from plone.memoize.interfaces import ICacheChooser
 
 from dexterity.localroles.utility import runRelatedSearch
-from dexterity.localroles.utils import add_related_roles, del_related_roles, fti_configuration
+from dexterity.localroles.utils import add_related_roles, del_related_roles, fti_configuration, get_state
 
 from .utils import get_localrole_fields
 
@@ -75,3 +75,13 @@ def related_change_on_transition(obj, event):
         related_role_removal(obj, event.old_state.id, fti_config[name], name)
         # We have to add the configuration linked to new state
         related_role_addition(obj, event.new_state.id, fti_config[name], name)
+
+
+def related_change_on_addition(obj, event):
+    """ Set local roles on related objects after addition """
+    fti_config = fti_configuration(obj)
+    fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
+    for (name, f) in get_localrole_fields(fti):
+        if name not in fti_config:
+            continue
+        related_role_addition(obj, get_state(obj), fti_config[name], name)
