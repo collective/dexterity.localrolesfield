@@ -3,10 +3,15 @@
 from zope.component import getUtility
 
 from plone.behavior.interfaces import IBehavior
-
+from plone.memoize.ram import cache
 from dexterity.localrolesfield.interfaces import IBaseLocalRoleField
 
 
+def cache_key(fun, fti):
+    return fti
+
+
+@cache(cache_key)
 def get_localrole_fields(fti):
     """Get all local role(s) fields for given fti.
 

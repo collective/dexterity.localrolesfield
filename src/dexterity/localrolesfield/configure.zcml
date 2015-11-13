@@ -23,6 +23,7 @@
     factory=".adapter.LocalRoleFieldAdapter"
     />
 
+  <include file="subscribers.zcml"/>
   <include package=".browser"/>
   <include package=".upgrades"/>
 
