@@ -10,4 +10,10 @@
     handler=".subscriber.fti_modified"
     />
 
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+    handler=".subscriber.related_change_on_transition"
+    />
+
 </configure>

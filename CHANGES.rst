@@ -8,7 +8,10 @@ Changelog
   [sgeulette]
 - Add a related field to store a text configuration that will be used to set related objects local roles.
   [sgeulette]
-
+- Add memoize on localroles fields list
+  [sgeulette]
+- Change related local roles on transition
+  [sgeulette]
 
 0.2.1 (2015-06-02)
 ------------------
