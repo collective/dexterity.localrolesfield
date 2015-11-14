@@ -28,4 +28,16 @@
     handler=".subscriber.related_change_on_removal"
     />
 
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         OFS.interfaces.IObjectWillBeMovedEvent"
+    handler=".subscriber.related_change_on_moving"
+    />
+
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         zope.lifecycleevent.interfaces.IObjectMovedEvent"
+    handler=".subscriber.related_change_on_moved"
+    />
+
 </configure>

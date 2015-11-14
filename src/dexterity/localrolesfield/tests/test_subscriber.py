@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import transaction
 import unittest2 as unittest
 from plone import api
 from plone.app.testing import login, TEST_USER_NAME, setRoles, TEST_USER_ID
@@ -75,3 +76,25 @@ class TestSubscriber(unittest.TestCase):
         api.content.delete(obj=self.item)
         # The parent is changed
         self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})
+
+    def test_related_change_on_move(self):
+        # We need to commit here so that _p_jar isn't None and move will work
+        transaction.savepoint(optimistic=True)
+        # The parent is set by addition subscriber
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+                             {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
+                              u'kate': set(['Reader'])})
+        # We create a folder
+        self.portal.invokeFactory('Folder', 'folder')
+        folder = self.portal['folder']
+        self.assertDictEqual(get_related_roles(folder, self.item.UID()), {})
+        # We move the item
+        api.content.move(source=self.item, target=folder)
+        # The old parent is changed
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})
+        # The new parent is changed
+        self.assertDictEqual(get_related_roles(folder, self.item.UID()),
+                             {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
+                              u'kate': set(['Reader'])})
+        item = folder['testlocalroles']
+        api.content.rename(obj=item, new_id='test1')

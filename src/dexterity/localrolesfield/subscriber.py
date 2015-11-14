@@ -1,6 +1,8 @@
 # encoding: utf-8
 
+from OFS.interfaces import IObjectWillBeAddedEvent, IObjectWillBeRemovedEvent
 from zope.component import getUtility
+from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectRemovedEvent
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.memoize.interfaces import ICacheChooser
 
@@ -99,3 +101,31 @@ def related_change_on_removal(obj, event):
         # The action could be cancelled: we can't know this !! Resolved in Plone 5...
         # We choose to update related objects anyway !!
         related_role_removal(obj, get_state(obj), fti_config[name], name)
+
+
+def related_change_on_moving(obj, event):
+    """ Set local roles on related objects before moving """
+    if IObjectWillBeAddedEvent.providedBy(event) or IObjectWillBeRemovedEvent.providedBy(event):  # not move
+        return
+    if event.oldParent and event.newParent and event.oldParent == event.newParent:  # rename
+        return
+    fti_config = fti_configuration(obj)
+    fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
+    for (name, f) in get_localrole_fields(fti):
+        if name not in fti_config:
+            continue
+        related_role_removal(obj, get_state(obj), fti_config[name], name)
+
+
+def related_change_on_moved(obj, event):
+    """ Set local roles on related objects after moving """
+    if IObjectAddedEvent.providedBy(event) or IObjectRemovedEvent.providedBy(event):  # not move
+        return
+    if event.oldParent and event.newParent and event.oldParent == event.newParent:  # rename
+        return
+    fti_config = fti_configuration(obj)
+    fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
+    for (name, f) in get_localrole_fields(fti):
+        if name not in fti_config:
+            continue
+        related_role_addition(obj, get_state(obj), fti_config[name], name)
