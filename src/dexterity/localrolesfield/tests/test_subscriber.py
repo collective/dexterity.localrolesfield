@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest2 as unittest
 from plone import api
-from plone.app.testing import login, logout, TEST_USER_NAME, setRoles, TEST_USER_ID
+from plone.app.testing import login, TEST_USER_NAME, setRoles, TEST_USER_ID
 
 from dexterity.localroles.utils import add_fti_configuration, get_related_roles
 
@@ -56,11 +56,6 @@ class TestSubscriber(unittest.TestCase):
                                        localrole_user_field=[u'john', u'kate'],
                                        mono_localrole_field=u'john')
 
-    def tearDown(self):
-        api.content.delete(obj=self.item)
-        setattr(self.portal.portal_types.get('testingtype'), 'localroles', {})
-        logout()
-
     def test_related_change_on_transition(self):
         api.content.transition(obj=self.item, transition='publish')
         self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
@@ -71,3 +66,12 @@ class TestSubscriber(unittest.TestCase):
         self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader'])})
+
+    def test_related_change_on_removal(self):
+        # The parent is set by addition subscriber
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+                             {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
+                              u'kate': set(['Reader'])})
+        api.content.delete(obj=self.item)
+        # The parent is changed
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})

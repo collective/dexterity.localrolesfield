@@ -22,4 +22,10 @@
     handler=".subscriber.related_change_on_addition"
     />
 
+  <subscriber
+    for="plone.dexterity.interfaces.IDexterityContent
+         zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+    handler=".subscriber.related_change_on_removal"
+    />
+
 </configure>
