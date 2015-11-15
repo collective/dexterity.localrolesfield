@@ -23,6 +23,14 @@
     factory=".adapter.LocalRoleFieldAdapter"
     />
 
+  <include package="z3c.unconfigure" file="meta.zcml" />
+  <unconfigure>
+    <!--comment> Unconfigure dexterity.localroles subscriber for ILocalRoleListUpdatedEvent </comment-->
+    <subscriber
+      for="dexterity.localroles.browser.interfaces.ILocalRoleListUpdatedEvent"
+      handler="dexterity.localroles.subscriber.local_role_related_configuration_updated" />
+  </unconfigure>
+
   <include file="subscribers.zcml"/>
   <include package=".browser"/>
   <include package=".upgrades"/>

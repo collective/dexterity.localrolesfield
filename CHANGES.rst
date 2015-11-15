@@ -12,6 +12,8 @@ Changelog
   [sgeulette]
 - Change related local roles on transition, on addition, on removal, on moving
   [sgeulette]
+- Unconfigure dexterity.localroles subscriber for ILocalRoleListUpdatedEvent
+  [sgeulette]
 
 0.2.1 (2015-06-02)
 ------------------

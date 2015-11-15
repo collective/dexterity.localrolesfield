@@ -46,6 +46,7 @@ setup(
         'plone.api',
         'plone.app.dexterity',
         'setuptools',
+        'z3c.unconfigure',
     ],
     extras_require={
         'test': [
