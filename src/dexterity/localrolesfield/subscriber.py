@@ -3,12 +3,17 @@
 from OFS.interfaces import IObjectWillBeAddedEvent, IObjectWillBeRemovedEvent
 from zope.component import getUtility
 from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectRemovedEvent
+from plone import api
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.memoize.interfaces import ICacheChooser
 
+from dexterity.localroles.subscriber import (configuration_change_analysis,
+                                             related_role_addition as lr_related_role_addition,
+                                             related_role_removal as lr_related_role_removal)
 from dexterity.localroles.utility import runRelatedSearch
 from dexterity.localroles.utils import add_related_roles, del_related_roles, fti_configuration, get_state
 
+from . import logger
 from .utils import get_localrole_fields
 
 
@@ -129,3 +134,34 @@ def related_change_on_moved(obj, event):
         if name not in fti_config:
             continue
         related_role_addition(obj, get_state(obj), fti_config[name], name)
+
+
+def local_role_related_configuration_updated(event):
+    """
+        Local roles configuration modification: we have to compare old and new values.
+        event.old_value is like : {'private': {'raptor': {'rel': "{'dexterity.localroles.related_parent': ['Editor']}",
+                                                          'roles': ('Reader',)}}}
+    """
+    only_reindex, rem_rel_roles, add_rel_roles = configuration_change_analysis(event)
+    portal = api.portal.getSite()
+    if only_reindex:
+        logger.info('Objects security update')
+        for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=list(only_reindex)):
+            obj = brain.getObject()
+            obj.reindexObjectSecurity()
+    if rem_rel_roles:
+        logger.info("Removing related roles: %s" % rem_rel_roles)
+        for st in rem_rel_roles:
+            for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=st):
+                if event.field == 'static_config':
+                    lr_related_role_removal(brain.getObject(), brain.review_state, {event.field: rem_rel_roles})
+                else:
+                    related_role_removal(brain.getObject(), brain.review_state, rem_rel_roles, event.field)
+    if add_rel_roles:
+        logger.info('Adding related roles')
+        for st in add_rel_roles:
+            for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=st):
+                if event.field == 'static_config':
+                    lr_related_role_addition(brain.getObject(), brain.review_state, {event.field: add_rel_roles})
+                else:
+                    related_role_addition(brain.getObject(), brain.review_state, add_rel_roles, event.field)

@@ -10,7 +10,7 @@ Changelog
   [sgeulette]
 - Add memoize on localroles fields list
   [sgeulette]
-- Change related local roles on transition, on addition, on removal, on moving
+- Change related local roles on transition, on addition, on removal, on moving, on configuration changes
   [sgeulette]
 - Unconfigure dexterity.localroles subscriber for ILocalRoleListUpdatedEvent
   [sgeulette]

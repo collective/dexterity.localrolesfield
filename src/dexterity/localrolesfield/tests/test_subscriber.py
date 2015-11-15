@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import transaction
 import unittest2 as unittest
+from zope.annotation.interfaces import IAnnotations
 from plone import api
 from plone.app.testing import login, TEST_USER_NAME, setRoles, TEST_USER_ID
 
-from dexterity.localroles.utils import add_fti_configuration, get_related_roles
+from dexterity.localroles.browser.settings import LocalRoleConfigurationAdapter
+from dexterity.localroles.utils import add_fti_configuration, get_related_roles, rel_key
 
 from ..testing import LOCALROLESFIELD_FUNCTIONAL
 
@@ -98,3 +100,100 @@ class TestSubscriber(unittest.TestCase):
                               u'kate': set(['Reader'])})
         item = folder['testlocalroles']
         api.content.rename(obj=item, new_id='test1')
+
+    def test_local_role_configuration_updated(self):
+        class dummy(object):
+            def __init__(self, fti):
+                self.fti = fti
+                self.context = self
+
+        ctool = self.portal.portal_catalog
+        fti = self.portal.portal_types.get('testingtype')
+        dum = dummy(fti)
+        cls = LocalRoleConfigurationAdapter(dum)
+        fti.localroles = {}
+        api.content.transition(obj=self.item, transition='submit')
+        annot = IAnnotations(self.portal)
+        del annot[rel_key]
+        item1 = api.content.create(container=self.portal, type='testingtype',
+                                   id='testlocalroles1', title='TestLocalRoles1',
+                                   localrole_field=[u'mail'],
+                                   localrole_user_field=[u'john', u'kate'],
+                                   mono_localrole_field=u'john')
+        # Nothing is set !
+        self.assertDictEqual(get_related_roles(self.portal, item1.UID()), {})
+        # Adding a state
+        setattr(cls, 'static_config',
+                [{'state': 'private', 'value': 'jane', 'roles': ('Reader',),
+                  'related': "{'dexterity.localroles.related_parent':['Reader']}"}])
+        setattr(cls, 'localrole_field',
+                [{'state': 'private', 'value': 'editor', 'roles': ('Editor',),
+                  'related': "{'dexterity.localroles.related_parent':['Editor']}"}])
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(item1.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertIn('user:jane', allowedRolesAndUsers)
+        self.assertIn('user:mail_editor', allowedRolesAndUsers)
+        self.assertDictEqual(get_related_roles(self.portal, item1.UID()),
+                             {'jane': set(['Reader']), 'mail_editor': set(['Editor'])})
+        # Removing a state
+        setattr(cls, 'static_config',
+                [{'state': 'pending', 'value': 'kate', 'roles': ('Reader',),
+                  'related': "{'dexterity.localroles.related_parent':['Reader']}"}])
+        setattr(cls, 'localrole_field',
+                [{'state': 'pending', 'value': 'reviewer', 'roles': ('Reviewer',),
+                  'related': "{'dexterity.localroles.related_parent':['Reviewer']}"}])
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(item1.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertNotIn('user:jane', allowedRolesAndUsers)
+        self.assertNotIn('user:mail_editor', allowedRolesAndUsers)
+        self.assertDictEqual(get_related_roles(self.portal, item1.UID()), {})
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertIn('user:kate', allowedRolesAndUsers)
+        self.assertIn('user:mail_reviewer', allowedRolesAndUsers)
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+                             {'kate': set(['Reader']), 'mail_reviewer': set(['Reviewer'])})
+        # Adding principal
+        setattr(cls, 'static_config',
+                [{'state': 'pending', 'value': 'kate', 'roles': ('Reader',),
+                  'related': "{'dexterity.localroles.related_parent':['Reader']}"},
+                 {'state': 'pending', 'value': 'jane', 'roles': ('Reader',),
+                  'related': "{'dexterity.localroles.related_parent':['Reader']}"}])
+        setattr(cls, 'localrole_field',
+                [{'state': 'pending', 'value': 'reviewer', 'roles': ('Reviewer',),
+                  'related': "{'dexterity.localroles.related_parent':['Reviewer']}"},
+                 {'state': 'pending', 'value': 'editor', 'roles': ('Editor',),
+                  'related': "{'dexterity.localroles.related_parent':['Editor']}"}])
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertIn('user:kate', allowedRolesAndUsers)
+        self.assertIn('user:jane', allowedRolesAndUsers)
+        self.assertIn('user:mail_editor', allowedRolesAndUsers)
+        self.assertIn('user:mail_reviewer', allowedRolesAndUsers)
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+                             {'kate': set(['Reader']), 'jane': set(['Reader']),
+                              'mail_reviewer': set(['Reviewer']), 'mail_editor': set(['Editor'])})
+        # Removing principal
+        setattr(cls, 'static_config',
+                [{'state': 'pending', 'value': 'jane', 'roles': ('Reader',),
+                  'related': "{'dexterity.localroles.related_parent':['Reader']}"}])
+        setattr(cls, 'localrole_field',
+                [{'state': 'pending', 'value': 'editor', 'roles': ('Editor',),
+                  'related': "{'dexterity.localroles.related_parent':['Editor']}"}])
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertNotIn('user:kate', allowedRolesAndUsers)
+        self.assertIn('user:jane', allowedRolesAndUsers)
+        self.assertNotIn('user:mail_reviewer', allowedRolesAndUsers)
+        self.assertIn('user:mail_editor', allowedRolesAndUsers)
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+                             {'jane': set(['Reader']), 'mail_editor': set(['Editor'])})
+        # Removing roles, Adding and removing rel
+        setattr(cls, 'static_config',
+                [{'state': 'pending', 'value': 'jane', 'roles': (),
+                  'related': "{'dexterity.localroles.related_parent':['Reviewer']}"}])
+        setattr(cls, 'localrole_field',
+                [{'state': 'pending', 'value': 'editor', 'roles': (),
+                  'related': "{'dexterity.localroles.related_parent':['Reviewer']}"}])
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertNotIn('user:kate', allowedRolesAndUsers)
+        self.assertNotIn('user:jane', allowedRolesAndUsers)
+        self.assertNotIn('user:mail_reviewer', allowedRolesAndUsers)
+        self.assertNotIn('user:mail_editor', allowedRolesAndUsers)
+        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+                             {'jane': set(['Reviewer']), 'mail_editor': set(['Reviewer'])})

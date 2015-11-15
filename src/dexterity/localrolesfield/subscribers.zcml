@@ -40,4 +40,8 @@
     handler=".subscriber.related_change_on_moved"
     />
 
+  <subscriber
+    for="dexterity.localroles.browser.interfaces.ILocalRoleListUpdatedEvent"
+    handler=".subscriber.local_role_related_configuration_updated" />
+
 </configure>
