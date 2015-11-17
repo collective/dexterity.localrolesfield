@@ -74,6 +74,8 @@ def related_change_on_transition(obj, event):
     if event.old_state.id == event.new_state.id:  # escape creation
         return
     fti_config = fti_configuration(obj)
+    if not fti_config:
+        return
     fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
     for (name, f) in get_localrole_fields(fti):
         if name not in fti_config:
@@ -87,6 +89,8 @@ def related_change_on_transition(obj, event):
 def related_change_on_addition(obj, event):
     """ Set local roles on related objects after addition """
     fti_config = fti_configuration(obj)
+    if not fti_config:
+        return
     fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
     for (name, f) in get_localrole_fields(fti):
         if name not in fti_config:
@@ -97,6 +101,8 @@ def related_change_on_addition(obj, event):
 def related_change_on_removal(obj, event):
     """ Set local roles on related objects after removal """
     fti_config = fti_configuration(obj)
+    if not fti_config:
+        return
     fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
     for (name, f) in get_localrole_fields(fti):
         if name not in fti_config:
@@ -115,6 +121,8 @@ def related_change_on_moving(obj, event):
     if event.oldParent and event.newParent and event.oldParent == event.newParent:  # rename
         return
     fti_config = fti_configuration(obj)
+    if not fti_config:
+        return
     fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
     for (name, f) in get_localrole_fields(fti):
         if name not in fti_config:
@@ -129,6 +137,8 @@ def related_change_on_moved(obj, event):
     if event.oldParent and event.newParent and event.oldParent == event.newParent:  # rename
         return
     fti_config = fti_configuration(obj)
+    if not fti_config:
+        return
     fti = getUtility(IDexterityFTI, name=obj.portal_type)  # Must be returned by fti_configuration
     for (name, f) in get_localrole_fields(fti):
         if name not in fti_config:
