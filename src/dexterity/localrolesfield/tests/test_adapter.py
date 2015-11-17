@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+from persistent.mapping import PersistentMapping
 import unittest
 
 from plone import api
@@ -68,7 +69,7 @@ class TestAdapter(unittest.TestCase):
 
     def tearDown(self):
         api.content.delete(obj=self.item)
-        setattr(self.test_fti, 'localroles', {})
+        setattr(self.test_fti, 'localroles', PersistentMapping())
         logout()
 
     @property

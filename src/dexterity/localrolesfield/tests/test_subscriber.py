@@ -61,18 +61,18 @@ class TestSubscriber(unittest.TestCase):
 
     def test_related_change_on_transition(self):
         api.content.transition(obj=self.item, transition='publish')
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {u'mail_editor': set(['Reader']), u'john': set(['Editor']),
                               u'kate': set(['Editor'])})
 
     def test_related_change_on_addition(self):
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader'])})
 
     def test_related_change_on_removal(self):
         # The parent is set by addition subscriber
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader'])})
         api.content.delete(obj=self.item)
@@ -83,7 +83,7 @@ class TestSubscriber(unittest.TestCase):
         # We need to commit here so that _p_jar isn't None and move will work
         transaction.savepoint(optimistic=True)
         # The parent is set by addition subscriber
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader'])})
         # We create a folder
@@ -95,7 +95,7 @@ class TestSubscriber(unittest.TestCase):
         # The old parent is changed
         self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})
         # The new parent is changed
-        self.assertDictEqual(get_related_roles(folder, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(folder, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader'])})
         item = folder['testlocalroles']
@@ -132,7 +132,7 @@ class TestSubscriber(unittest.TestCase):
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(item1.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertIn('user:jane', allowedRolesAndUsers)
         self.assertIn('user:mail_editor', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, item1.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, item1.UID())),
                              {'jane': set(['Reader']), 'mail_editor': set(['Editor'])})
         # Removing a state
         setattr(cls, 'static_config',
@@ -148,7 +148,7 @@ class TestSubscriber(unittest.TestCase):
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertIn('user:kate', allowedRolesAndUsers)
         self.assertIn('user:mail_reviewer', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {'kate': set(['Reader']), 'mail_reviewer': set(['Reviewer'])})
         # Adding principal
         setattr(cls, 'static_config',
@@ -166,7 +166,7 @@ class TestSubscriber(unittest.TestCase):
         self.assertIn('user:jane', allowedRolesAndUsers)
         self.assertIn('user:mail_editor', allowedRolesAndUsers)
         self.assertIn('user:mail_reviewer', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {'kate': set(['Reader']), 'jane': set(['Reader']),
                               'mail_reviewer': set(['Reviewer']), 'mail_editor': set(['Editor'])})
         # Removing principal
@@ -181,7 +181,7 @@ class TestSubscriber(unittest.TestCase):
         self.assertIn('user:jane', allowedRolesAndUsers)
         self.assertNotIn('user:mail_reviewer', allowedRolesAndUsers)
         self.assertIn('user:mail_editor', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {'jane': set(['Reader']), 'mail_editor': set(['Editor'])})
         # Removing roles, Adding and removing rel
         setattr(cls, 'static_config',
@@ -195,5 +195,5 @@ class TestSubscriber(unittest.TestCase):
         self.assertNotIn('user:jane', allowedRolesAndUsers)
         self.assertNotIn('user:mail_reviewer', allowedRolesAndUsers)
         self.assertNotIn('user:mail_editor', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {'jane': set(['Reviewer']), 'mail_editor': set(['Reviewer'])})

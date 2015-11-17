@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from persistent.mapping import PersistentMapping
 import logging
 
 from zope.component import getUtilitiesFor
@@ -18,7 +19,7 @@ def v2(context):
                 continue
             logger.info("FTI '%s' => Copying old field config '%s': '%s'" % (name, fname, getattr(fti, fname)))
             if not base_hasattr(fti, 'localroles'):
-                setattr(fti, 'localroles', {})
+                setattr(fti, 'localroles', PersistentMapping())
             fti.localroles[fname] = {}
             for state_key, state_dic in getattr(fti, fname).items():
                 fti.localroles[fname][state_key] = {}
