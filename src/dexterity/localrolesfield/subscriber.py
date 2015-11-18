@@ -168,7 +168,7 @@ def local_role_related_configuration_updated(event):
                 else:
                     related_role_removal(brain.getObject(), brain.review_state, rem_rel_roles, event.field)
     if add_rel_roles:
-        logger.info('Adding related roles')
+        logger.info('Adding related roles: %s' % add_rel_roles)
         for st in add_rel_roles:
             for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=st):
                 if event.field == 'static_config':
