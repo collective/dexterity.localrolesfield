@@ -21,6 +21,7 @@
     for="plone.dexterity.interfaces.IDexterityContent"
     provides="borg.localrole.interfaces.ILocalRoleProvider"
     factory=".adapter.LocalRoleFieldAdapter"
+    name="local-role-field-adapter"
     />
 
   <include package="z3c.unconfigure" file="meta.zcml" />
