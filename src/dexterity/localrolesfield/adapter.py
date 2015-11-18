@@ -6,17 +6,21 @@ from plone.dexterity.interfaces import IDexterityFTI
 
 from Products.CMFPlone.utils import base_hasattr
 from borg.localrole.interfaces import ILocalRoleProvider
-from dexterity.localroles.adapter import LocalRoleAdapter
 
-from dexterity.localrolesfield.utils import get_localrole_fields
+from dexterity.localroles.utils import get_state
+
+from .utils import get_localrole_fields
 
 
-class LocalRoleFieldAdapter(LocalRoleAdapter):
+class LocalRoleFieldAdapter(object):
     implements(ILocalRoleProvider)
+
+    def __init__(self, context):
+        self.context = context
 
     def getRoles(self, principal):
         """Grant permission for principal"""
-        roles = list(super(LocalRoleFieldAdapter, self).getRoles(principal))
+        roles = []
         for field, value in self.field_and_values_list:
             config = self.get_config(field).get(self.current_state)
             if not config:
@@ -36,8 +40,6 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
 
     def getAllRoles(self):
         """Grant permissions"""
-        for role in super(LocalRoleFieldAdapter, self).getAllRoles():
-            yield role
         for field, value in self.field_and_values_list:
             state_config = self.get_config(field).get(self.current_state)
             if not state_config:
@@ -84,3 +86,8 @@ class LocalRoleFieldAdapter(LocalRoleAdapter):
         if not base_hasattr(self.fti, 'localroles'):
             return {}
         return self.fti.localroles.get(fieldname, {})
+
+    @property
+    def current_state(self):
+        """Return the state of the current object"""
+        return get_state(self.context)

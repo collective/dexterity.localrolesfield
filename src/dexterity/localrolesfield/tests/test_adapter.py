@@ -92,7 +92,7 @@ class TestAdapter(unittest.TestCase):
         self.assertEqual(('Reader', 'Reviewer'), adapter.getRoles('john'))
         self.assertEqual((), adapter.getRoles('jane'))
         self.assertEqual((), adapter.getRoles('tom'))
-        self.assertEqual(('Editor', 'Reader'), adapter.getRoles('kate'))
+        self.assertEqual(('Reader',), adapter.getRoles('kate'))
 
         # Groups
         self.assertEqual((), adapter.getRoles('support_editor'))
@@ -123,8 +123,7 @@ class TestAdapter(unittest.TestCase):
 
     def test_getAllRoles_private(self):
         self.assertEqual('private', api.content.get_state(obj=self.item))
-        roles = [('kate', ('Editor', )),
-                 (u'john', ('Reader', )),
+        roles = [(u'john', ('Reader', )),
                  (u'john', ('Reviewer', )),
                  (u'kate', ('Reader', )),
                  (u'mail_reviewer', ('Contributor', 'Reader')),
@@ -134,8 +133,7 @@ class TestAdapter(unittest.TestCase):
     def test_getAllRoles_published(self):
         api.content.transition(obj=self.item, transition='publish')
         self.assertEqual('published', api.content.get_state(obj=self.item))
-        roles = [('', ('', )),
-                 (u'john', ('Editor', )),
+        roles = [(u'john', ('Editor', )),
                  (u'kate', ('Editor', )),
                  (u'mail_reviewer', ('Editor', 'Contributor', 'Reader')),
                  (u'mail_editor', ('Reader', ))]

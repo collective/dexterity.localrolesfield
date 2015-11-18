@@ -14,6 +14,8 @@ Changelog
   [sgeulette]
 - Unconfigure dexterity.localroles subscriber for ILocalRoleListUpdatedEvent
   [sgeulette]
+- Don't call anymore localroles adapter in localrolesfield adapter. Adapters are now named and differentiated.
+  [sgeulette]
 
 0.2.1 (2015-06-02)
 ------------------
