@@ -23,7 +23,7 @@ class TestSubscriber(unittest.TestCase):
         field_config = {
             u'private': {
                 'editor': {'roles': ('Editor', 'Reader'), 'rel': "{'dexterity.localroles.related_parent':['Editor']}"},
-                'reviewer': {'roles': ('Contributor', 'Reader')},
+                'reviewer': {'roles': ('Contributor', 'Reader'), 'rel': "{'dexterity.localroles.related_parent':[]}"},
             },
             u'published': {
                 'editor': {'roles': ('Reader', ), 'rel': "{'dexterity.localroles.related_parent':['Reader']}"},
