@@ -1,7 +1,7 @@
 Changelog
 =========
 
-0.3 (unreleased)
+1.0 (2015-11-24)
 ----------------
 
 - Configuration is now stored in one fti attribute to avoid a field name erases an existing fti attribute.
