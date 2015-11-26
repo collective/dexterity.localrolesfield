@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.1 (unreleased)
-----------------
+1.0.1 (2015-11-26)
+------------------
 
 - Test if attribute exists (can be hidden)
   [sgeulette]
