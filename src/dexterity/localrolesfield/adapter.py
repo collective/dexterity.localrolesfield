@@ -63,6 +63,8 @@ class LocalRoleFieldAdapter(object):
         fields = get_localrole_fields(self.fti)
         field_and_values = []
         for fieldname, _field in fields:
+            if not base_hasattr(self.context, fieldname):
+                continue
             values = getattr(self.context, fieldname) or []
             if not isinstance(values, list):
                 values = [values]
