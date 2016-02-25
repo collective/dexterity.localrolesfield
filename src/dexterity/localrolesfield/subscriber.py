@@ -21,6 +21,7 @@ def fti_modified(obj, event):
     """
         When an FTI is modified, invalidate localrole fields list cache.
     """
+    return  # cache is no more used because not necessary following timecall
     if not IDexterityFTI.providedBy(event.object):
         return
     cache_chooser = getUtility(ICacheChooser)
