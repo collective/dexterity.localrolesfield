@@ -62,7 +62,6 @@ class TestSubscriber(unittest.TestCase):
                                        mono_localrole_field=u'john')
 
     def test_update_security(self):
-        #import ipdb; ipdb.set_trace()
         doc = api.content.create(container=self.item, type='Document', id='doc', title='Document')
         ctool = self.portal.portal_catalog
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
