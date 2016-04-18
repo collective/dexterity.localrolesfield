@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1 (unreleased)
+1.1 (2016-04-18)
 ----------------
 
 - Reindex children security when a parent role field is modified.
