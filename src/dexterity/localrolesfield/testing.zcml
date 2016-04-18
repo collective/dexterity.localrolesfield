@@ -23,7 +23,7 @@
   <plone:behavior
       title="TestingBehavior"
       description="TestingBehavior for local role field."
-      provides=".testing.TestingBehavior"
+      provides=".testing.ITestingBehavior"
       />
 
 </configure>

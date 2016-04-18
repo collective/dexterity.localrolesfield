@@ -10,7 +10,7 @@
  <property name="link_target"></property>
  <property name="immediate_view">view</property>
  <property name="global_allow">True</property>
- <property name="filter_content_types">True</property>
+ <property name="filter_content_types">False</property>
  <property name="allowed_content_types"/>
  <property name="allow_discussion">False</property>
  <property name="default_view">view</property>
@@ -23,7 +23,7 @@
  <property name="behaviors">
   <element value="plone.app.content.interfaces.INameFromTitle"/>
   <element value="plone.app.dexterity.behaviors.metadata.IBasic"/>
-  <element value="dexterity.localrolesfield.testing.TestingBehavior"/>
+  <element value="dexterity.localrolesfield.testing.ITestingBehavior"/>
  </property>
  <property name="schema">dexterity.localrolesfield.testing.ITestingType</property>
  <alias from="(Default)" to="(dynamic view)"/>

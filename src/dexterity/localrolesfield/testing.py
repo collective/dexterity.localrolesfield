@@ -8,7 +8,7 @@ from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneWithPackageLayer
 from plone.app.testing import ploneSite
-from plone.dexterity.content import Item
+from plone.dexterity.content import Container
 from plone.supermodel import model
 from plone.testing import z2
 from zope import interface
@@ -38,13 +38,13 @@ class ITestingType(model.Schema):
     )
 
 
-class TestingType(Item):
+class TestingType(Container):
     interface.implements(ITestingType)
 
     localrole_field = FieldProperty(ITestingType[u'localrole_field'])
 
 
-class TestingBehavior(model.Schema):
+class ITestingBehavior(model.Schema):
 
     mono_localrole_field = LocalRoleField(
         title=u"Mono valued local role field",
@@ -55,7 +55,7 @@ class TestingBehavior(model.Schema):
             u'tom',
             u'kate'])
     )
-alsoProvides(TestingBehavior, IFormFieldProvider)
+alsoProvides(ITestingBehavior, IFormFieldProvider)
 
 
 class LocalRolesFieldLayer(PloneWithPackageLayer):
@@ -66,6 +66,7 @@ class LocalRolesFieldLayer(PloneWithPackageLayer):
             groups_tool = portal.portal_groups
             groups = {'mail_editor': ('john', 'jane'),
                       'mail_reviewer': ('jane', 'tom'),
+                      'support_editor': ('kate', ),
                       'support_reviewer': ('kate', )}
             for group_id in groups:
                 if group_id not in groups_tool.getGroupIds():

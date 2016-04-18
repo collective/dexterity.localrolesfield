@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import transaction
-import unittest2 as unittest
+import unittest
+import zope.event
 from zope.annotation.interfaces import IAnnotations
+from zope.lifecycleevent import ObjectModifiedEvent, Attributes
 from plone import api
 from plone.app.testing import login, TEST_USER_NAME, setRoles, TEST_USER_ID
 
 from dexterity.localroles.browser.settings import LocalRoleConfigurationAdapter
 from dexterity.localroles.utils import add_fti_configuration, get_related_roles, rel_key
 
-from ..testing import LOCALROLESFIELD_FUNCTIONAL
+from ..testing import LOCALROLESFIELD_FUNCTIONAL, ITestingType, ITestingBehavior
 
 
 class TestSubscriber(unittest.TestCase):
@@ -58,6 +60,33 @@ class TestSubscriber(unittest.TestCase):
                                        localrole_field=[u'mail'],
                                        localrole_user_field=[u'john', u'kate'],
                                        mono_localrole_field=u'john')
+
+    def test_update_security(self):
+        #import ipdb; ipdb.set_trace()
+        doc = api.content.create(container=self.item, type='Document', id='doc', title='Document')
+        ctool = self.portal.portal_catalog
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertSetEqual(set(['Manager', 'Site Administrator', 'Reader', 'Editor', 'Contributor', 'user:admin',
+                                 'user:test_user_1_', 'user:kate', u'user:mail_editor', u'user:mail_reviewer',
+                                 u'user:john']), set(allowedRolesAndUsers))
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(doc.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertSetEqual(set(['Manager', 'Site Administrator', 'Reader', 'Editor', 'Contributor', 'user:admin',
+                                 'user:test_user_1_', 'user:kate', u'user:mail_editor', u'user:mail_reviewer',
+                                 u'user:john']), set(allowedRolesAndUsers))
+        self.item.localrole_field = ['support']
+        self.item.localrole_user_field = ['jane', 'tom']
+        self.item.mono_localrole_field = 'basic-user'
+        zope.event.notify(ObjectModifiedEvent(self.item, Attributes(ITestingBehavior,
+                                              'ITestingBehavior.mono_localrole_field'), Attributes(ITestingType,
+                                              'localrole_field', 'localrole_user_field'), ))
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertSetEqual(set(['Manager', 'Site Administrator', 'Reader', 'Editor', 'Contributor', 'user:admin',
+                                 'user:test_user_1_', 'user:kate', u'user:support_editor', u'user:support_reviewer',
+                                 u'user:jane', u'user:tom']), set(allowedRolesAndUsers))
+        allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(doc.getPhysicalPath()))['allowedRolesAndUsers']
+        self.assertSetEqual(set(['Manager', 'Site Administrator', 'Reader', 'Editor', 'Contributor', 'user:admin',
+                                 'user:test_user_1_', 'user:kate', u'user:support_editor', u'user:support_reviewer',
+                                 u'user:jane', u'user:tom']), set(allowedRolesAndUsers))
 
     def test_related_change_on_transition(self):
         api.content.transition(obj=self.item, transition='publish')

@@ -4,15 +4,14 @@ Changelog
 1.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Reindex children security when a parent role field is modified.
+  [sgeulette]
 
 1.0.1 (2015-11-26)
 ------------------
 
 - Test if attribute exists (can be hidden)
   [sgeulette]
-
 
 1.0 (2015-11-24)
 ----------------

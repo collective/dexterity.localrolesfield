@@ -4,7 +4,7 @@ from OFS.interfaces import IObjectWillBeAddedEvent, IObjectWillBeRemovedEvent
 from zope.component import getUtility
 from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectRemovedEvent
 from plone import api
-from plone.dexterity.interfaces import IDexterityFTI
+from plone.dexterity.interfaces import IDexterityFTI, IDexterityContainer
 from plone.memoize.interfaces import ICacheChooser
 
 from dexterity.localroles.subscriber import (configuration_change_analysis,
@@ -27,6 +27,23 @@ def fti_modified(obj, event):
     cache_chooser = getUtility(ICacheChooser)
     thecache = cache_chooser('dexterity.localrolesfield.utils.get_localrole_fields')
     thecache.ramcache.invalidate('dexterity.localrolesfield.utils.get_localrole_fields')
+
+
+def _check_modified_fieldname(obj, event):
+    names = [f[0] for f in get_localrole_fields(getUtility(IDexterityFTI, name=obj.portal_type))]
+    for at in event.descriptions:
+        for name in at.attributes:
+            if '.' in name:
+                name = name.split('.')[-1]
+            if name in names:
+                return True
+    return False
+
+
+def update_security(obj, event):
+    # We have to reindex sub objects security when a localrolefield is modified
+    if IDexterityContainer.providedBy(obj) and _check_modified_fieldname(obj, event):
+        obj.reindexObjectSecurity(skip_self=True)
 
 
 def get_field_values(obj, name):
