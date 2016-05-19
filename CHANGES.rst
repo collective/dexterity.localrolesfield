@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.2 (unreleased)
-----------------
+1.1.1 (2016-05-19)
+------------------
 
 - Test if event description contains attributes.
   [sgeulette]
