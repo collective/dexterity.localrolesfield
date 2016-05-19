@@ -4,8 +4,8 @@ Changelog
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Test if event description contains attributes.
+  [sgeulette]
 
 1.1 (2016-04-18)
 ----------------

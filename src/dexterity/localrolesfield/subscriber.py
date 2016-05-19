@@ -32,7 +32,7 @@ def fti_modified(obj, event):
 def _check_modified_fieldname(obj, event):
     names = [f[0] for f in get_localrole_fields(getUtility(IDexterityFTI, name=obj.portal_type))]
     for at in event.descriptions:
-        for name in at.attributes:
+        for name in getattr(at, 'attributes', []):
             if '.' in name:
                 name = name.split('.')[-1]
             if name in names:
