@@ -42,7 +42,7 @@ class TestSubscriber(unittest.TestCase):
         }
         global_config = {
             u'private': {
-                'kate': {'roles': ('Editor', )},
+                'kate': {'roles': ('Editor', ), 'rel': "{'dexterity.localroles.related_parent':['Manager']}"},
             },
         }
         behavior_field_config = {
@@ -61,7 +61,7 @@ class TestSubscriber(unittest.TestCase):
                                        localrole_user_field=[u'john', u'kate'],
                                        mono_localrole_field=u'john')
 
-    def test_update_security(self):
+    def test_object_modified(self):
         doc = api.content.create(container=self.item, type='Document', id='doc', title='Document')
         ctool = self.portal.portal_catalog
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
@@ -87,6 +87,20 @@ class TestSubscriber(unittest.TestCase):
                                  'user:test_user_1_', 'user:kate', u'user:support_editor', u'user:support_reviewer',
                                  u'user:jane', u'user:tom']), set(allowedRolesAndUsers))
 
+    def test_object_modified_related(self):
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
+                             {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
+                              u'kate': set(['Reader', 'Manager'])})
+        self.item.localrole_field = ['support']
+        self.item.localrole_user_field = ['jane', 'tom']
+        self.item.mono_localrole_field = 'basic-user'
+        zope.event.notify(ObjectModifiedEvent(self.item, Attributes(ITestingBehavior,
+                                              'ITestingBehavior.mono_localrole_field'), Attributes(ITestingType,
+                                              'localrole_field', 'localrole_user_field'), ))
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
+                             {u'support_editor': set(['Editor']), u'jane': set(['Reader']), u'tom': set(['Reader']),
+                              u'basic-user': set(['Reviewer']), u'kate': set(['Manager'])})
+
     def test_related_change_on_transition(self):
         api.content.transition(obj=self.item, transition='publish')
         self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
@@ -96,16 +110,16 @@ class TestSubscriber(unittest.TestCase):
     def test_related_change_on_addition(self):
         self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
-                              u'kate': set(['Reader'])})
+                              u'kate': set(['Reader', 'Manager'])})
 
     def test_related_change_on_removal(self):
         # The parent is set by addition subscriber
         self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
-                              u'kate': set(['Reader'])})
+                              u'kate': set(['Reader', 'Manager'])})
         api.content.delete(obj=self.item)
         # The parent is changed
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())), {})
 
     def test_related_change_on_move(self):
         # We need to commit here so that _p_jar isn't None and move will work
@@ -113,19 +127,19 @@ class TestSubscriber(unittest.TestCase):
         # The parent is set by addition subscriber
         self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
-                              u'kate': set(['Reader'])})
+                              u'kate': set(['Reader', 'Manager'])})
         # We create a folder
         self.portal.invokeFactory('Folder', 'folder')
         folder = self.portal['folder']
-        self.assertDictEqual(get_related_roles(folder, self.item.UID()), {})
+        self.assertDictEqual(dict(get_related_roles(folder, self.item.UID())), {})
         # We move the item
         api.content.move(source=self.item, target=folder)
         # The old parent is changed
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})
+        self.assertDictEqual(dict(get_related_roles(self.portal, self.item.UID())), {})
         # The new parent is changed
         self.assertDictEqual(dict(get_related_roles(folder, self.item.UID())),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
-                              u'kate': set(['Reader'])})
+                              u'kate': set(['Reader', 'Manager'])})
         item = folder['testlocalroles']
         api.content.rename(obj=item, new_id='test1')
 

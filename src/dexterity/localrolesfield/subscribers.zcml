@@ -13,7 +13,7 @@
   <subscriber
     for="plone.dexterity.interfaces.IDexterityContent
          zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-    handler=".subscriber.update_security"
+    handler=".subscriber.object_modified"
     />
 
   <subscriber

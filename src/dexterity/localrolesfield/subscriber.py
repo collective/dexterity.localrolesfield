@@ -11,7 +11,8 @@ from dexterity.localroles.subscriber import (configuration_change_analysis,
                                              related_role_addition as lr_related_role_addition,
                                              related_role_removal as lr_related_role_removal)
 from dexterity.localroles.utility import runRelatedSearch
-from dexterity.localroles.utils import add_related_roles, del_related_roles, fti_configuration, get_state
+from dexterity.localroles.utils import (add_related_roles, del_related_roles, fti_configuration, get_state,
+                                        del_related_uid)
 
 from . import logger
 from .utils import get_localrole_fields
@@ -36,14 +37,8 @@ def _check_modified_fieldname(obj, event):
             if '.' in name:
                 name = name.split('.')[-1]
             if name in names:
-                return True
-    return False
-
-
-def update_security(obj, event):
-    # We have to reindex sub objects security when a localrolefield is modified
-    if IDexterityContainer.providedBy(obj) and _check_modified_fieldname(obj, event):
-        obj.reindexObjectSecurity(skip_self=True)
+                return (True, names)
+    return (False, [])
 
 
 def get_field_values(obj, name):
@@ -87,6 +82,50 @@ def related_role_addition(obj, state, field_config, name):
                             rel.reindexObjectSecurity()
 
 
+def related_annot_removal(obj, state, field_config):
+    if state in field_config:
+        dic = field_config[state]
+        uid = obj.UID()
+        for suffix in dic:
+            if dic[suffix].get('rel', ''):
+                related = eval(dic[suffix]['rel'])
+                for utility in related:
+                    if not related[utility]:
+                        continue
+                    for rel in runRelatedSearch(utility, obj):
+                        del_related_uid(rel, uid)
+
+
+def object_modified(obj, event):
+    (modif, names) = _check_modified_fieldname(obj, event)
+    if not modif:
+        return
+    (fti_config, fti) = fti_configuration(obj)
+    if not fti_config:
+        return
+
+    # We have to reindex sub objects security when a localrolefield is modified
+    if IDexterityContainer.providedBy(obj):
+        obj.reindexObjectSecurity(skip_self=True)
+
+    # We have to update related objects
+    state = get_state(obj)
+    # First we remove previous rel annotation for this uid
+    if 'static_config' in fti_config:
+        related_annot_removal(obj, state, fti_config['static_config'])
+    for name in names:
+        if name not in fti_config:
+            continue
+        related_annot_removal(obj, state, fti_config[name])
+    # Second we add related roles annotations
+    if 'static_config' in fti_config:
+        lr_related_role_addition(obj, state, fti_config)
+    for name in names:
+        if name not in fti_config:
+            continue
+        related_role_addition(obj, state, fti_config[name], name)
+
+
 def related_change_on_transition(obj, event):
     """ Set local roles on related objects after transition """
     if event.old_state.id == event.new_state.id:  # escape creation
@@ -126,7 +165,8 @@ def related_change_on_removal(obj, event):
         # There is a problem in Plone 4.3. The event is notified before the confirmation and after too.
         # The action could be cancelled: we can't know this !! Resolved in Plone 5...
         # We choose to update related objects anyway !!
-        related_role_removal(obj, get_state(obj), fti_config[name], name)
+        related_annot_removal(obj, get_state(obj), fti_config[name])
+        #related_role_removal(obj, get_state(obj), fti_config[name], name)
 
 
 def related_change_on_moving(obj, event):

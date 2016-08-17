@@ -4,8 +4,8 @@ Changelog
 1.2 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Manage object modification for related.
+  [sgeulette]
 
 1.1.1 (2016-05-19)
 ------------------
