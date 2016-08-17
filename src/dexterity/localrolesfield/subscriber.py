@@ -166,7 +166,6 @@ def related_change_on_removal(obj, event):
         # The action could be cancelled: we can't know this !! Resolved in Plone 5...
         # We choose to update related objects anyway !!
         related_annot_removal(obj, get_state(obj), fti_config[name])
-        #related_role_removal(obj, get_state(obj), fti_config[name], name)
 
 
 def related_change_on_moving(obj, event):
