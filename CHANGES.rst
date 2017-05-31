@@ -1,7 +1,13 @@
 Changelog
 =========
 
-1.2 (unreleased)
+1.3 (unreleased)
+----------------
+
+- Nothing changed yet.
+
+
+1.2 (2017-05-30)
 ----------------
 
 - Manage object modification for related.
