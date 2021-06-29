@@ -1,15 +1,13 @@
 # encoding: utf-8
-from zope.component import getUtility, ComponentLookupError
-from zope.interface import implements
-
-from plone.dexterity.interfaces import IDexterityFTI
-
-from Products.CMFPlone.utils import base_hasattr
 from borg.localrole.interfaces import ILocalRoleProvider
-
 from dexterity.localroles.utils import get_state
-
-from .utils import get_localrole_fields
+from dexterity.localrolesfield.utils import get_localrole_fields
+from plone.dexterity.interfaces import IDexterityFTI
+from Products.CMFPlone.utils import base_hasattr
+from zope.component import ComponentLookupError
+from zope.component import getUtility
+from zope.interface import implements
+from zope.schema._bootstrapinterfaces import RequiredMissing
 
 
 class LocalRoleFieldAdapter(object):
@@ -63,7 +61,10 @@ class LocalRoleFieldAdapter(object):
         fields = get_localrole_fields(self.fti)
         field_and_values = []
         for fieldname, _field in fields:
-            if not base_hasattr(self.context, fieldname):
+            try:
+                if not base_hasattr(self.context, fieldname):
+                    continue
+            except RequiredMissing:
                 continue
             values = getattr(self.context, fieldname) or []
             if not isinstance(values, list):

@@ -4,8 +4,8 @@ Changelog
 1.3 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Added "try except" to manage RequiredMissing exception.
+  [sgeulette]
 
 1.2 (2017-05-30)
 ----------------
