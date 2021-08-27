@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3 (unreleased)
+1.3 (2021-08-27)
 ----------------
 
 - Added "try except" to manage RequiredMissing exception.
