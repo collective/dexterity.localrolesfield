@@ -199,10 +199,10 @@ def related_change_on_moved(obj, event):
 
 
 def local_role_related_configuration_updated(event):
-    """
-        Local roles configuration modification: we have to compare old and new values.
-        event.old_value is like : {'private': {'raptor': {'rel': "{'dexterity.localroles.related_parent': ['Editor']}",
-                                                          'roles': ('Reader',)}}}
+    """Local roles configuration modification: we have to compare old and new values.
+
+    event.old_value is like : {'private': {'raptor': {'rel': "{'dexterity.localroles.related_parent': ['Editor']}",
+                                                      'roles': ('Reader',)}}}
     """
     only_reindex, rem_rel_roles, add_rel_roles = configuration_change_analysis(event)
     portal = api.portal.getSite()
