@@ -4,8 +4,8 @@ Changelog
 1.4 (unreleased)
 ----------------
 
-- Nothing changed yet.
-
+- Updated requirements.
+  [sgeulette]
 
 1.3 (2021-08-27)
 ----------------

@@ -41,7 +41,7 @@ setup(
     install_requires=[
         'Products.CMFCore',
         'collective.z3cform.datagridfield',
-        'dexterity.localroles',
+        'dexterity.localroles<2.0.0',
         'five.grok',
         'plone.api',
         'plone.app.dexterity',

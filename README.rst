@@ -15,7 +15,7 @@ If completed, the suffix name will be added at the end of the local role field v
 
 By example: if the configuration suffix is "director" and the local role field value is "group1", the local role will be given to "group1_director".
 
-This last functionality is used with the package collective.contact.plonegroup. 
+This last functionality is used with the package collective.contact.plonegroup.
 
 Technically, this package extends dexterity.localroles:
 
@@ -30,6 +30,11 @@ Installation
 * Add dexterity.localrolesfield to your eggs.
 * Re-run buildout.
 * Done.
+
+Versions
+========
+
+* Version 1.x is Plone 4 only
 
 Credits
 =======
