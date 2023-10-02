@@ -1,18 +1,20 @@
 # encoding: utf-8
 from collective.z3cform.datagridfield import DictRow
-from z3c.form import field, validator
+from dexterity.localroles import _ as LRMF
+from dexterity.localroles.browser.settings import LocalRoleConfigurationForm
+from dexterity.localroles.browser.settings import LocalRoleConfigurationPage
+from dexterity.localroles.browser.settings import LocalRoleList
+from dexterity.localroles.browser.settings import RelatedFormatValidator
+from dexterity.localroles.browser.settings import Role
+from dexterity.localroles.browser.settings import WorkflowState
+from dexterity.localrolesfield import _
+from dexterity.localrolesfield.utils import get_localrole_fields
+from z3c.form import field
+from z3c.form import validator
 from zope.interface import Interface
 from zope.schema import Choice
-from zope.schema import Text, TextLine
-from dexterity.localroles import _ as LRMF
-
-from dexterity.localroles.browser.settings import LocalRoleConfigurationForm, LocalRoleConfigurationPage
-from dexterity.localroles.browser.settings import LocalRoleList, RelatedFormatValidator, Role
-from dexterity.localroles.browser.settings import WorkflowState
-from dexterity.localroles.vocabulary import plone_role_generator
-
-from dexterity.localrolesfield.utils import get_localrole_fields
-from dexterity.localrolesfield import _
+from zope.schema import Text
+from zope.schema import TextLine
 
 
 class ILocalRoleConfig(Interface):
@@ -21,7 +23,7 @@ class ILocalRoleConfig(Interface):
     value = TextLine(title=_(u'suffix'), required=False, default=u'')
 
     roles = Role(title=LRMF(u'roles'),
-                 value_type=Choice(source=plone_role_generator),
+                 value_type=Choice(vocabulary='dexterity.localroles.vocabulary.SharingRolesVocabulary'),
                  required=True)
 
     related = Text(title=LRMF(u'related role configuration'),
