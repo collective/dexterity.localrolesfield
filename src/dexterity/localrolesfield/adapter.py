@@ -6,12 +6,12 @@ from plone.dexterity.interfaces import IDexterityFTI
 from Products.CMFPlone.utils import base_hasattr
 from zope.component import ComponentLookupError
 from zope.component import getUtility
-from zope.interface import implements
+from zope.interface import implementer
 from zope.schema._bootstrapinterfaces import RequiredMissing
 
 
+@implementer(ILocalRoleProvider)
 class LocalRoleFieldAdapter(object):
-    implements(ILocalRoleProvider)
 
     def __init__(self, context):
         self.context = context

@@ -1,5 +1,5 @@
 # encoding: utf-8
-from collective.z3cform.datagridfield import DictRow
+from collective.z3cform.datagridfield.row import DictRow
 from dexterity.localroles import _ as LRMF
 from dexterity.localroles.browser.settings import LocalRoleConfigurationForm
 from dexterity.localroles.browser.settings import LocalRoleConfigurationPage
@@ -39,7 +39,7 @@ class LocalRoleFieldConfigurationForm(LocalRoleConfigurationForm):
     @property
     def fields(self):
         fields = super(LocalRoleFieldConfigurationForm, self).fields
-        fields = fields.values()
+        fields = list(fields.values())
         schema_fields = []
         for name, fti_field in get_localrole_fields(self.context.fti):
             f = LocalRoleList(

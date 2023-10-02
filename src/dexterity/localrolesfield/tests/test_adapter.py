@@ -81,7 +81,7 @@ class TestAdapter(unittest.TestCase):
 
     def _check_roles(self, expected_roles):
         roles = self._adapter.getAllRoles()
-        self.assertItemsEqual(expected_roles, [r for r in roles])
+        self.assertEqual(sorted(expected_roles), sorted([r for r in roles]))
 
     def test_getRoles_private(self):
         adapter = self._adapter
@@ -145,9 +145,9 @@ class TestAdapter(unittest.TestCase):
             ('localrole_user_field', u'kate'),
             ('mono_localrole_field', u'john')
         ]
-        self.assertItemsEqual(
+        self.assertEqual(
             field_values,
-            self._adapter.field_and_values_list)
+            sorted(self._adapter.field_and_values_list))
 
     def test_format_suffix(self):
         adapter = self._adapter

@@ -11,8 +11,8 @@ from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from plone.testing import z2
-from zope import interface
 from zope.interface import alsoProvides
+from zope.interface import implementer
 from zope.schema import Choice
 from zope.schema.fieldproperty import FieldProperty
 from zope.schema.vocabulary import SimpleVocabulary
@@ -39,8 +39,8 @@ class ITestingType(model.Schema):
     )
 
 
+@implementer(ITestingType)
 class TestingType(Container):
-    interface.implements(ITestingType)
 
     localrole_field = FieldProperty(ITestingType[u'localrole_field'])
 
