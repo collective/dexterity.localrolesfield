@@ -34,6 +34,7 @@ Installation
 Versions
 ========
 
+* Version 2.x is Plone 4 and Plone6 compliant
 * Version 1.x is Plone 4 only
 
 Credits

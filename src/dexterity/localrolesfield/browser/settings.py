@@ -29,6 +29,7 @@ class ILocalRoleConfig(Interface):
     related = Text(title=LRMF(u'related role configuration'),
                    required=False)
 
+
 RelatedFieldFormatValidator = RelatedFormatValidator
 validator.WidgetValidatorDiscriminators(RelatedFieldFormatValidator, field=ILocalRoleConfig['related'])
 

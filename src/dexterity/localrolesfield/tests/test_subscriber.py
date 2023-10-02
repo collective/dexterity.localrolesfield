@@ -1,16 +1,23 @@
 # -*- coding: utf-8 -*-
+from ..testing import ITestingBehavior
+from ..testing import ITestingType
+from ..testing import LOCALROLESFIELD_FUNCTIONAL
+from dexterity.localroles.browser.settings import LocalRoleConfigurationAdapter
+from dexterity.localroles.utils import add_fti_configuration
+from dexterity.localroles.utils import get_related_roles
+from dexterity.localroles.utils import rel_key
+from plone import api
+from plone.app.testing import login
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+from zope.annotation.interfaces import IAnnotations
+from zope.lifecycleevent import Attributes
+from zope.lifecycleevent import ObjectModifiedEvent
+
 import transaction
 import unittest
 import zope.event
-from zope.annotation.interfaces import IAnnotations
-from zope.lifecycleevent import ObjectModifiedEvent, Attributes
-from plone import api
-from plone.app.testing import login, TEST_USER_NAME, setRoles, TEST_USER_ID
-
-from dexterity.localroles.browser.settings import LocalRoleConfigurationAdapter
-from dexterity.localroles.utils import add_fti_configuration, get_related_roles, rel_key
-
-from ..testing import LOCALROLESFIELD_FUNCTIONAL, ITestingType, ITestingBehavior
 
 
 class TestSubscriber(unittest.TestCase):

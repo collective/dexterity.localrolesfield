@@ -1,21 +1,25 @@
 # encoding: utf-8
 
-from OFS.interfaces import IObjectWillBeAddedEvent, IObjectWillBeRemovedEvent
-from zope.component import getUtility
-from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectRemovedEvent
-from plone import api
-from plone.dexterity.interfaces import IDexterityFTI, IDexterityContainer
-from plone.memoize.interfaces import ICacheChooser
-
-from dexterity.localroles.subscriber import (configuration_change_analysis,
-                                             related_role_addition as lr_related_role_addition,
-                                             related_role_removal as lr_related_role_removal)
-from dexterity.localroles.utility import runRelatedSearch
-from dexterity.localroles.utils import (add_related_roles, del_related_roles, fti_configuration, get_state,
-                                        del_related_uid)
-
 from . import logger
 from .utils import get_localrole_fields
+from dexterity.localroles.subscriber import configuration_change_analysis
+from dexterity.localroles.subscriber import related_role_addition as lr_related_role_addition
+from dexterity.localroles.subscriber import related_role_removal as lr_related_role_removal
+from dexterity.localroles.utility import runRelatedSearch
+from dexterity.localroles.utils import add_related_roles
+from dexterity.localroles.utils import del_related_roles
+from dexterity.localroles.utils import del_related_uid
+from dexterity.localroles.utils import fti_configuration
+from dexterity.localroles.utils import get_state
+from OFS.interfaces import IObjectWillBeAddedEvent
+from OFS.interfaces import IObjectWillBeRemovedEvent
+from plone import api
+from plone.dexterity.interfaces import IDexterityContainer
+from plone.dexterity.interfaces import IDexterityFTI
+from plone.memoize.interfaces import ICacheChooser
+from zope.component import getUtility
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 
 def fti_modified(obj, event):

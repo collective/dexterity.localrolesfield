@@ -1,18 +1,17 @@
 # encoding: utf-8
 
-from persistent.mapping import PersistentMapping
-import unittest
-
-from plone import api
-from plone.app.testing import TEST_USER_ID
-from plone.app.testing import TEST_USER_NAME
-from plone.app.testing import setRoles
-from plone.app.testing import login
-from plone.app.testing import logout
-
+from dexterity.localroles.utils import add_fti_configuration
 from dexterity.localrolesfield import testing
 from dexterity.localrolesfield.adapter import LocalRoleFieldAdapter
-from dexterity.localroles.utils import add_fti_configuration
+from persistent.mapping import PersistentMapping
+from plone import api
+from plone.app.testing import login
+from plone.app.testing import logout
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
+
+import unittest
 
 
 class TestAdapter(unittest.TestCase):
