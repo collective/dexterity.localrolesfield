@@ -9,7 +9,6 @@
 
   <include package="dexterity.localroles" />
   <include package="plone.z3cform" />
-  <include package="five.grok" />
 
   <genericsetup:registerProfile
       name="default"

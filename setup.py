@@ -42,7 +42,6 @@ setup(
         'Products.CMFCore',
         'collective.z3cform.datagridfield',
         'dexterity.localroles>=2.0.0.dev0',
-        'five.grok',
         'plone.api',
         'plone.app.dexterity',
         'setuptools',
