@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.4.dev0'
+version = '2.0.0.dev0'
 
 long_description = (
     open('README.rst').read()
@@ -41,7 +41,7 @@ setup(
     install_requires=[
         'Products.CMFCore',
         'collective.z3cform.datagridfield',
-        'dexterity.localroles<2.0.0',
+        'dexterity.localroles>=2.0.0.dev0',
         'five.grok',
         'plone.api',
         'plone.app.dexterity',

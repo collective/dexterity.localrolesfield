@@ -4,6 +4,7 @@
 .coverage
 .installed.cfg
 .mr.developer.cfg
+.plone*
 .project
 .pydevproject
 .settings/
@@ -13,6 +14,7 @@ report.html
 selenium-screenshot-*
 bin/
 buildout-cache/
+checkversion*
 develop-eggs/
 htmlcov/
 include/
