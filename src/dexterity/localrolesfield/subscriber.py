@@ -17,9 +17,14 @@ from plone.dexterity.interfaces import IDexterityContainer
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.memoize.interfaces import ICacheChooser
 from zope.component import getUtility
-from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
+
+
+try:
+    from zope.component.interfaces import ComponentLookupError  # noqa
+except ImportError:
+    from zope.interface.interfaces import ComponentLookupError
 
 
 def fti_modified(obj, event):
