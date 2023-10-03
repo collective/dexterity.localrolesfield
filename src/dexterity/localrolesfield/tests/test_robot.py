@@ -1,8 +1,8 @@
 # encoding: utf-8
 
-from robotsuite import RobotTestSuite
-from plone.testing import layered
 from dexterity.localrolesfield import testing
+from plone.testing import layered
+from robotsuite import RobotTestSuite
 
 
 def test_suite():

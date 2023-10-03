@@ -1,8 +1,8 @@
 # encoding: utf-8
+from dexterity.localrolesfield.interfaces import ILocalRoleField
+from dexterity.localrolesfield.interfaces import ILocalRolesField
 from zope import schema
 from zope.interface import implementer
-
-from dexterity.localrolesfield.interfaces import ILocalRoleField, ILocalRolesField
 
 
 @implementer(ILocalRolesField)

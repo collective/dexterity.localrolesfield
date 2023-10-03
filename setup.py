@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-version = '1.4.dev0'
+version = '2.0.0.dev0'
 
 long_description = (
     open('README.rst').read()
@@ -23,9 +23,12 @@ setup(
     classifiers=[
         "Environment :: Web Environment",
         "Framework :: Plone",
+        "Framework :: Plone :: 4.3",
+        "Framework :: Plone :: 6.0",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.10",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     keywords='Plone Python',
@@ -41,8 +44,7 @@ setup(
     install_requires=[
         'Products.CMFCore',
         'collective.z3cform.datagridfield',
-        'dexterity.localroles<2.0.0',
-        'five.grok',
+        'dexterity.localroles>=2.0.0.dev0',
         'plone.api',
         'plone.app.dexterity',
         'setuptools',

@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
+from ..utils import get_localrole_fields
 from persistent.mapping import PersistentMapping
-import logging
-
+from plone.dexterity.interfaces import IDexterityFTI
+from Products.CMFPlone.utils import base_hasattr
 from zope.component import getUtilitiesFor
 
-from Products.CMFPlone.utils import base_hasattr
-from plone.dexterity.interfaces import IDexterityFTI
+import logging
 
-from ..utils import get_localrole_fields
 
 logger = logging.getLogger('dexterity.localroles: upgrade. ')
 

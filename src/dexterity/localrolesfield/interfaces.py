@@ -1,8 +1,8 @@
 # encoding: utf-8
-from zope.interface import Interface
-from zope.schema.interfaces import IChoice, IList
-
 from dexterity.localroles.interfaces import IDexterityLocalRoles
+from zope.interface import Interface
+from zope.schema.interfaces import IChoice
+from zope.schema.interfaces import IList
 
 
 class IDexterityLocalRolesField(IDexterityLocalRoles):

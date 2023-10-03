@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """Utils."""
-from zope.component import getUtility
-
-from plone.behavior.interfaces import IBehavior
 # from plone.memoize.ram import cache
 from dexterity.localrolesfield.interfaces import IBaseLocalRoleField
+from plone.behavior.interfaces import IBehavior
+from zope.component import getUtility
 
 
 def cache_key(fun, fti):

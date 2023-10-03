@@ -1,17 +1,18 @@
 # encoding: utf-8
-from zope.interface import alsoProvides
-from dexterity.localrolesfield.field import LocalRolesField, LocalRoleField
+from dexterity.localrolesfield.field import LocalRoleField
+from dexterity.localrolesfield.field import LocalRolesField
 from plone import api
-from plone.autoform.interfaces import IFormFieldProvider
 from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
-from plone.app.testing import PloneWithPackageLayer
 from plone.app.testing import ploneSite
+from plone.app.testing import PloneWithPackageLayer
+from plone.autoform.interfaces import IFormFieldProvider
 from plone.dexterity.content import Container
 from plone.supermodel import model
 from plone.testing import z2
-from zope import interface
+from zope.interface import alsoProvides
+from zope.interface import implementer
 from zope.schema import Choice
 from zope.schema.fieldproperty import FieldProperty
 from zope.schema.vocabulary import SimpleVocabulary
@@ -38,8 +39,8 @@ class ITestingType(model.Schema):
     )
 
 
+@implementer(ITestingType)
 class TestingType(Container):
-    interface.implements(ITestingType)
 
     localrole_field = FieldProperty(ITestingType[u'localrole_field'])
 
@@ -55,6 +56,8 @@ class ITestingBehavior(model.Schema):
             u'tom',
             u'kate'])
     )
+
+
 alsoProvides(ITestingBehavior, IFormFieldProvider)
 
 

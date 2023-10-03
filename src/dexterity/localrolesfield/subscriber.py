@@ -1,21 +1,30 @@
 # encoding: utf-8
-
-from OFS.interfaces import IObjectWillBeAddedEvent, IObjectWillBeRemovedEvent
-from zope.component import getUtility
-from zope.lifecycleevent.interfaces import IObjectAddedEvent, IObjectRemovedEvent
-from plone import api
-from plone.dexterity.interfaces import IDexterityFTI, IDexterityContainer
-from plone.memoize.interfaces import ICacheChooser
-
-from dexterity.localroles.subscriber import (configuration_change_analysis,
-                                             related_role_addition as lr_related_role_addition,
-                                             related_role_removal as lr_related_role_removal)
+from dexterity.localroles.subscriber import configuration_change_analysis
+from dexterity.localroles.subscriber import related_role_addition as lr_related_role_addition
+from dexterity.localroles.subscriber import related_role_removal as lr_related_role_removal
 from dexterity.localroles.utility import runRelatedSearch
-from dexterity.localroles.utils import (add_related_roles, del_related_roles, fti_configuration, get_state,
-                                        del_related_uid)
+from dexterity.localroles.utils import add_related_roles
+from dexterity.localroles.utils import del_related_roles
+from dexterity.localroles.utils import del_related_uid
+from dexterity.localroles.utils import fti_configuration
+from dexterity.localroles.utils import get_state
+from dexterity.localrolesfield import logger
+from dexterity.localrolesfield.utils import get_localrole_fields
+from OFS.interfaces import IObjectWillBeAddedEvent
+from OFS.interfaces import IObjectWillBeRemovedEvent
+from plone import api
+from plone.dexterity.interfaces import IDexterityContainer
+from plone.dexterity.interfaces import IDexterityFTI
+from plone.memoize.interfaces import ICacheChooser
+from zope.component import getUtility
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
-from . import logger
-from .utils import get_localrole_fields
+
+try:
+    from zope.component.interfaces import ComponentLookupError  # noqa
+except ImportError:
+    from zope.interface.interfaces import ComponentLookupError
 
 
 def fti_modified(obj, event):
@@ -31,14 +40,17 @@ def fti_modified(obj, event):
 
 
 def _check_modified_fieldname(obj, event):
-    names = [f[0] for f in get_localrole_fields(getUtility(IDexterityFTI, name=obj.portal_type))]
+    try:
+        names = [f[0] for f in get_localrole_fields(getUtility(IDexterityFTI, name=obj.portal_type))]
+    except ComponentLookupError:
+        return False, []
     for at in event.descriptions:
         for name in getattr(at, 'attributes', []):
             if '.' in name:
                 name = name.split('.')[-1]
             if name in names:
-                return (True, names)
-    return (False, [])
+                return True, names
+    return False, []
 
 
 def get_field_values(obj, name):
