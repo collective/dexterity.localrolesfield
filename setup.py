@@ -34,7 +34,14 @@ setup(
     keywords='Plone Python',
     author='IMIO',
     author_email='support@imio.be',
-    url='https://github.com/collective/',
+    url="https://github.com/collective/dexterity.localrolesfield",
+    project_urls={
+        "PyPI": "https://pypi.python.org/pypi/dexterity.localrolesfield",
+        "Source": "https://github.com/collective/dexterity.localrolesfield",
+        # "Tracker": (
+        #     "https://github.com/collective/dexterity.localroles/issues"
+        # ),
+    },
     license='gpl',
     packages=find_packages('src'),
     package_dir={'': 'src'},
