@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0.0 (unreleased)
-------------------
+2.0.0a (2023-11-28)
+-------------------
 
 - Made Plone4 and Plone6 compliant
 - Updated requirements.
