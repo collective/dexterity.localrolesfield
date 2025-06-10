@@ -50,6 +50,9 @@ jobs:
           sed -ie "s#test.cfg#test-${{matrix.plone}}.cfg#" gha.cfg
           buildout -c gha.cfg annotate
           buildout -c gha.cfg
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        timeout-minutes: 60
       - name: test
         run: |
           bin/test -t !robot
