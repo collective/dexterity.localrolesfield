@@ -30,6 +30,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libjpeg62 libjpeg62 libbz2-dev
+          sudo ln -s /usr/lib/x86_64-linux-gnu/libtiff.so.6 /usr/lib/x86_64-linux-gnu/libtiff.so.5
       - name: Set up pyenv and Python
         uses: "gabrielfalcao/pyenv-action@v18"
         with:
@@ -50,9 +51,6 @@ jobs:
           sed -ie "s#test.cfg#test-${{matrix.plone}}.cfg#" gha.cfg
           buildout -c gha.cfg annotate
           buildout -c gha.cfg
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        timeout-minutes: 60
       - name: test
         run: |
           bin/test -t !robot
