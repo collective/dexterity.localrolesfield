@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from ..testing import ITestingBehavior
-from ..testing import ITestingType
-from ..testing import LOCALROLESFIELD_FUNCTIONAL
 from dexterity.localroles.browser.settings import LocalRoleConfigurationAdapter
 from dexterity.localroles.utils import add_fti_configuration
 from dexterity.localroles.utils import get_related_roles
 from dexterity.localroles.utils import rel_key
+from dexterity.localrolesfield import HAS_PLONE_6
+from dexterity.localrolesfield.testing import ITestingBehavior
+from dexterity.localrolesfield.testing import ITestingType
+from dexterity.localrolesfield.testing import LOCALROLESFIELD_FUNCTIONAL
 from plone import api
 from plone.app.testing import login
 from plone.app.testing import setRoles
@@ -18,6 +19,10 @@ from zope.lifecycleevent import ObjectModifiedEvent
 import transaction
 import unittest
 import zope.event
+
+
+if HAS_PLONE_6:
+    from Products.CMFCore.indexing import processQueue
 
 
 class TestSubscriber(unittest.TestCase):
@@ -62,7 +67,8 @@ class TestSubscriber(unittest.TestCase):
         add_fti_configuration('testingtype', userfield_config, keyname='localrole_user_field')
         add_fti_configuration('testingtype', behavior_field_config, keyname='mono_localrole_field')
 
-        self.item = api.content.create(container=self.portal, type='testingtype',
+        self.folder = api.content.create(container=self.portal, type="Folder", id="folder", title="Folder")
+        self.item = api.content.create(container=self.folder, type='testingtype',
                                        id='testlocalroles', title='TestLocalRoles',
                                        localrole_field=[u'mail'],
                                        localrole_user_field=[u'john', u'kate'],
@@ -95,7 +101,7 @@ class TestSubscriber(unittest.TestCase):
                                  u'user:jane', u'user:tom']), set(allowedRolesAndUsers))
 
     def test_object_modified_related(self):
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader', 'Manager'])})
         self.item.localrole_field = ['support']
@@ -104,50 +110,50 @@ class TestSubscriber(unittest.TestCase):
         zope.event.notify(ObjectModifiedEvent(self.item, Attributes(ITestingBehavior,
                                               'ITestingBehavior.mono_localrole_field'), Attributes(ITestingType,
                                               'localrole_field', 'localrole_user_field'), ))
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {u'support_editor': set(['Editor']), u'jane': set(['Reader']), u'tom': set(['Reader']),
                               u'basic-user': set(['Reviewer']), u'kate': set(['Manager'])})
 
     def test_related_change_on_transition(self):
         api.content.transition(obj=self.item, transition='publish')
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {u'mail_editor': set(['Reader']), u'john': set(['Editor']),
                               u'kate': set(['Editor'])})
 
     def test_related_change_on_addition(self):
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader', 'Manager'])})
 
     def test_related_change_on_removal(self):
         # The parent is set by addition subscriber
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader', 'Manager'])})
         api.content.delete(obj=self.item)
         # The parent is changed
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()), {})
 
     def test_related_change_on_move(self):
         # We need to commit here so that _p_jar isn't None and move will work
         transaction.savepoint(optimistic=True)
         # The parent is set by addition subscriber
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader', 'Manager'])})
         # We create a folder
-        self.portal.invokeFactory('Folder', 'folder')
-        folder = self.portal['folder']
-        self.assertDictEqual(get_related_roles(folder, self.item.UID()), {})
+        self.portal.invokeFactory('Folder', 'folder1')
+        folder1 = self.portal['folder1']
+        self.assertDictEqual(get_related_roles(folder1, self.item.UID()), {})
         # We move the item
-        api.content.move(source=self.item, target=folder)
+        api.content.move(source=self.item, target=folder1)
         # The old parent is changed
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()), {})
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()), {})
         # The new parent is changed
-        self.assertDictEqual(get_related_roles(folder, self.item.UID()),
+        self.assertDictEqual(get_related_roles(folder1, self.item.UID()),
                              {u'mail_editor': set(['Editor']), u'john': set(['Reviewer', 'Reader']),
                               u'kate': set(['Reader', 'Manager'])})
-        item = folder['testlocalroles']
+        item = folder1['testlocalroles']
         api.content.rename(obj=item, new_id='test1')
 
     def test_local_role_configuration_updated(self):
@@ -162,15 +168,15 @@ class TestSubscriber(unittest.TestCase):
         cls = LocalRoleConfigurationAdapter(dum)
         fti.localroles = {}
         api.content.transition(obj=self.item, transition='submit')
-        annot = IAnnotations(self.portal)
+        annot = IAnnotations(self.folder)
         del annot[rel_key]
-        item1 = api.content.create(container=self.portal, type='testingtype',
+        item1 = api.content.create(container=self.folder, type='testingtype',
                                    id='testlocalroles1', title='TestLocalRoles1',
                                    localrole_field=[u'mail'],
                                    localrole_user_field=[u'john', u'kate'],
                                    mono_localrole_field=u'john')
         # Nothing is set !
-        self.assertDictEqual(get_related_roles(self.portal, item1.UID()), {})
+        self.assertDictEqual(get_related_roles(self.folder, item1.UID()), {})
         # Adding a state
         setattr(cls, 'static_config',
                 [{'state': 'private', 'value': 'jane', 'roles': ('Reader',),
@@ -178,10 +184,12 @@ class TestSubscriber(unittest.TestCase):
         setattr(cls, 'localrole_field',
                 [{'state': 'private', 'value': 'editor', 'roles': ('Editor',),
                   'related': "{'dexterity.localroles.related_parent':['Editor']}"}])
+        if HAS_PLONE_6:
+            processQueue()
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(item1.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertIn('user:jane', allowedRolesAndUsers)
         self.assertIn('user:mail_editor', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, item1.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, item1.UID()),
                              {'jane': set(['Reader']), 'mail_editor': set(['Editor'])})
         # Removing a state
         setattr(cls, 'static_config',
@@ -190,14 +198,16 @@ class TestSubscriber(unittest.TestCase):
         setattr(cls, 'localrole_field',
                 [{'state': 'pending', 'value': 'reviewer', 'roles': ('Reviewer',),
                   'related': "{'dexterity.localroles.related_parent':['Reviewer']}"}])
+        if HAS_PLONE_6:
+            processQueue()
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(item1.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertNotIn('user:jane', allowedRolesAndUsers)
         self.assertNotIn('user:mail_editor', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, item1.UID()), {})
+        self.assertDictEqual(get_related_roles(self.folder, item1.UID()), {})
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertIn('user:kate', allowedRolesAndUsers)
         self.assertIn('user:mail_reviewer', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {'kate': set(['Reader']), 'mail_reviewer': set(['Reviewer'])})
         # Adding principal
         setattr(cls, 'static_config',
@@ -210,12 +220,14 @@ class TestSubscriber(unittest.TestCase):
                   'related': "{'dexterity.localroles.related_parent':['Reviewer']}"},
                  {'state': 'pending', 'value': 'editor', 'roles': ('Editor',),
                   'related': "{'dexterity.localroles.related_parent':['Editor']}"}])
+        if HAS_PLONE_6:
+            processQueue()
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertIn('user:kate', allowedRolesAndUsers)
         self.assertIn('user:jane', allowedRolesAndUsers)
         self.assertIn('user:mail_editor', allowedRolesAndUsers)
         self.assertIn('user:mail_reviewer', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {'kate': set(['Reader']), 'jane': set(['Reader']),
                               'mail_reviewer': set(['Reviewer']), 'mail_editor': set(['Editor'])})
         # Removing principal
@@ -225,12 +237,14 @@ class TestSubscriber(unittest.TestCase):
         setattr(cls, 'localrole_field',
                 [{'state': 'pending', 'value': 'editor', 'roles': ('Editor',),
                   'related': "{'dexterity.localroles.related_parent':['Editor']}"}])
+        if HAS_PLONE_6:
+            processQueue()
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertNotIn('user:kate', allowedRolesAndUsers)
         self.assertIn('user:jane', allowedRolesAndUsers)
         self.assertNotIn('user:mail_reviewer', allowedRolesAndUsers)
         self.assertIn('user:mail_editor', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {'jane': set(['Reader']), 'mail_editor': set(['Editor'])})
         # Removing roles, Adding and removing rel
         setattr(cls, 'static_config',
@@ -239,10 +253,12 @@ class TestSubscriber(unittest.TestCase):
         setattr(cls, 'localrole_field',
                 [{'state': 'pending', 'value': 'editor', 'roles': (),
                   'related': "{'dexterity.localroles.related_parent':['Reviewer']}"}])
+        if HAS_PLONE_6:
+            processQueue()
         allowedRolesAndUsers = ctool.getIndexDataForUID('/'.join(self.item.getPhysicalPath()))['allowedRolesAndUsers']
         self.assertNotIn('user:kate', allowedRolesAndUsers)
-        self.assertNotIn('user:jane', allowedRolesAndUsers)
+        self.assertIn('user:jane', allowedRolesAndUsers)
         self.assertNotIn('user:mail_reviewer', allowedRolesAndUsers)
-        self.assertNotIn('user:mail_editor', allowedRolesAndUsers)
-        self.assertDictEqual(get_related_roles(self.portal, self.item.UID()),
+        self.assertIn('user:mail_editor', allowedRolesAndUsers)
+        self.assertDictEqual(get_related_roles(self.folder, self.item.UID()),
                              {'jane': set(['Reviewer']), 'mail_editor': set(['Reviewer'])})

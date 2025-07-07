@@ -17,6 +17,13 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <genericsetup:registerProfile
+      name="uninstall"
+      title="dexterity.localrolesfield uninstall profile"
+      directory="profiles/uninstall"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      />
+
   <adapter
     for="plone.dexterity.interfaces.IDexterityContent"
     provides="borg.localrole.interfaces.ILocalRoleProvider"
