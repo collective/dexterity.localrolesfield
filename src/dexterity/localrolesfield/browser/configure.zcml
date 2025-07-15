@@ -2,14 +2,16 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
-    i18n_domain="dexterity.localrolesfield">
+    i18n_domain="dexterity.localrolesfield"
+    >
 
   <browser:page
       name="localroles"
       for="plone.app.dexterity.interfaces.ITypeSchemaContext"
       class=".settings.LocalRoleFieldConfigurationPage"
       permission="plone.schemaeditor.ManageSchemata"
-      layer="dexterity.localrolesfield.interfaces.IDexterityLocalRolesField" />
+      layer="dexterity.localrolesfield.interfaces.IDexterityLocalRolesField"
+      />
 
   <adapter factory=".settings.RelatedFieldFormatValidator" />
 

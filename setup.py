@@ -2,21 +2,20 @@ from setuptools import find_packages
 from setuptools import setup
 
 
-version = '2.0.0a1.dev0'
+version = "2.0.0a1.dev0"
 
 long_description = (
-    open('README.rst').read()
-    + '\n' +
-    'Contributors\n'
-    '============\n'
-    + '\n' +
-    open('CONTRIBUTORS.rst').read()
-    + '\n' +
-    open('CHANGES.rst').read()
-    + '\n')
+    open("README.rst").read() + "\n" + "Contributors\n"
+    "============\n"
+    + "\n"
+    + open("CONTRIBUTORS.rst").read()
+    + "\n"
+    + open("CHANGES.rst").read()
+    + "\n"
+)
 
 setup(
-    name='dexterity.localrolesfield',
+    name="dexterity.localrolesfield",
     version=version,
     description="z3c.form local role field for dexterity",
     long_description=long_description,
@@ -35,9 +34,9 @@ setup(
         "Programming Language :: Python :: 3.13",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    keywords='Plone Python',
-    author='IMIO',
-    author_email='support@imio.be',
+    keywords="Plone Python",
+    author="IMIO",
+    author_email="support@imio.be",
     url="https://github.com/collective/dexterity.localrolesfield",
     project_urls={
         "PyPI": "https://pypi.python.org/pypi/dexterity.localrolesfield",
@@ -46,26 +45,28 @@ setup(
         #     "https://github.com/collective/dexterity.localroles/issues"
         # ),
     },
-    license='gpl',
-    packages=find_packages('src'),
-    package_dir={'': 'src'},
-    namespace_packages=['dexterity', ],
+    license="gpl",
+    packages=find_packages("src"),
+    package_dir={"": "src"},
+    namespace_packages=[
+        "dexterity",
+    ],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Products.CMFCore',
-        'collective.z3cform.datagridfield',
-        'dexterity.localroles>=2.0.0.dev0',
-        'plone.api',
-        'plone.app.dexterity',
-        'setuptools',
-        'z3c.unconfigure',
+        "Products.CMFCore",
+        "collective.z3cform.datagridfield",
+        "dexterity.localroles>=2.0.0.dev0",
+        "plone.api",
+        "plone.app.dexterity",
+        "setuptools",
+        "z3c.unconfigure",
     ],
     extras_require={
-        'test': [
-            'plone.api',
-            'plone.app.testing',
-            'plone.app.robotframework',
+        "test": [
+            "plone.api",
+            "plone.app.testing",
+            "plone.app.robotframework",
         ],
     },
     entry_points="""
