@@ -29,14 +29,14 @@ except ImportError:
 
 def fti_modified(obj, event):
     """
-        When an FTI is modified, invalidate localrole fields list cache.
+    When an FTI is modified, invalidate localrole fields list cache.
     """
     return  # cache is no more used because not necessary following timecall
     if not IDexterityFTI.providedBy(event.object):
         return
     cache_chooser = getUtility(ICacheChooser)
-    thecache = cache_chooser('dexterity.localrolesfield.utils.get_localrole_fields')
-    thecache.ramcache.invalidate('dexterity.localrolesfield.utils.get_localrole_fields')
+    thecache = cache_chooser("dexterity.localrolesfield.utils.get_localrole_fields")
+    thecache.ramcache.invalidate("dexterity.localrolesfield.utils.get_localrole_fields")
 
 
 def _check_modified_fieldname(obj, event):
@@ -45,9 +45,9 @@ def _check_modified_fieldname(obj, event):
     except ComponentLookupError:
         return False, []
     for at in event.descriptions:
-        for name in getattr(at, 'attributes', []):
-            if '.' in name:
-                name = name.split('.')[-1]
+        for name in getattr(at, "attributes", []):
+            if "." in name:
+                name = name.split(".")[-1]
             if name in names:
                 return True, names
     return False, []
@@ -65,13 +65,13 @@ def related_role_removal(obj, state, field_config, name):
         dic = field_config[state]
         uid = obj.UID()
         for suffix in dic:
-            if dic[suffix].get('rel', ''):
-                related = eval(dic[suffix]['rel'])
+            if dic[suffix].get("rel", ""):
+                related = eval(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
                     for val in get_field_values(obj, name):
-                        princ = suffix and '%s_%s' % (val, suffix) or val
+                        princ = suffix and "%s_%s" % (val, suffix) or val
                         for rel in runRelatedSearch(utility, obj):
                             if del_related_roles(rel, uid, princ, related[utility]):
                                 rel.reindexObjectSecurity()
@@ -82,13 +82,13 @@ def related_role_addition(obj, state, field_config, name):
         dic = field_config[state]
         uid = obj.UID()
         for suffix in dic:
-            if dic[suffix].get('rel', ''):
-                related = eval(dic[suffix]['rel'])
+            if dic[suffix].get("rel", ""):
+                related = eval(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
                     for val in get_field_values(obj, name):
-                        princ = suffix and '%s_%s' % (val, suffix) or val
+                        princ = suffix and "%s_%s" % (val, suffix) or val
                         for rel in runRelatedSearch(utility, obj):
                             add_related_roles(rel, uid, princ, related[utility])
                             rel.reindexObjectSecurity()
@@ -99,8 +99,8 @@ def related_annot_removal(obj, state, field_config):
         dic = field_config[state]
         uid = obj.UID()
         for suffix in dic:
-            if dic[suffix].get('rel', ''):
-                related = eval(dic[suffix]['rel'])
+            if dic[suffix].get("rel", ""):
+                related = eval(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
@@ -123,14 +123,14 @@ def object_modified(obj, event):
     # We have to update related objects
     state = get_state(obj)
     # First we remove previous rel annotation for this uid
-    if 'static_config' in fti_config:
-        related_annot_removal(obj, state, fti_config['static_config'])
+    if "static_config" in fti_config:
+        related_annot_removal(obj, state, fti_config["static_config"])
     for name in names:
         if name not in fti_config:
             continue
         related_annot_removal(obj, state, fti_config[name])
     # Second we add related roles annotations
-    if 'static_config' in fti_config:
+    if "static_config" in fti_config:
         lr_related_role_addition(obj, state, fti_config)
     for name in names:
         if name not in fti_config:
@@ -139,7 +139,7 @@ def object_modified(obj, event):
 
 
 def related_change_on_transition(obj, event):
-    """ Set local roles on related objects after transition """
+    """Set local roles on related objects after transition"""
     if event.old_state.id == event.new_state.id:  # escape creation
         return
     (fti_config, fti) = fti_configuration(obj)
@@ -155,7 +155,7 @@ def related_change_on_transition(obj, event):
 
 
 def related_change_on_addition(obj, event):
-    """ Set local roles on related objects after addition """
+    """Set local roles on related objects after addition"""
     (fti_config, fti) = fti_configuration(obj)
     if not fti_config:
         return
@@ -166,7 +166,7 @@ def related_change_on_addition(obj, event):
 
 
 def related_change_on_removal(obj, event):
-    """ Set local roles on related objects after removal """
+    """Set local roles on related objects after removal"""
     (fti_config, fti) = fti_configuration(obj)
     if not fti_config:
         return
@@ -181,7 +181,7 @@ def related_change_on_removal(obj, event):
 
 
 def related_change_on_moving(obj, event):
-    """ Set local roles on related objects before moving """
+    """Set local roles on related objects before moving"""
     if IObjectWillBeAddedEvent.providedBy(event) or IObjectWillBeRemovedEvent.providedBy(event):  # not move
         return
     if event.oldParent and event.newParent and event.oldParent == event.newParent:  # rename
@@ -196,7 +196,7 @@ def related_change_on_moving(obj, event):
 
 
 def related_change_on_moved(obj, event):
-    """ Set local roles on related objects after moving """
+    """Set local roles on related objects after moving"""
     if IObjectAddedEvent.providedBy(event) or IObjectRemovedEvent.providedBy(event):  # not move
         return
     if event.oldParent and event.newParent and event.oldParent == event.newParent:  # rename
@@ -219,7 +219,7 @@ def local_role_related_configuration_updated(event):
     only_reindex, rem_rel_roles, add_rel_roles = configuration_change_analysis(event)
     portal = api.portal.getSite()
     if only_reindex:
-        logger.info('Objects security update')
+        logger.info("Objects security update")
         for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=list(only_reindex)):
             obj = brain.getObject()
             obj.reindexObjectSecurity()
@@ -227,15 +227,15 @@ def local_role_related_configuration_updated(event):
         logger.info("Removing related roles: %s" % rem_rel_roles)
         for st in rem_rel_roles:
             for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=st):
-                if event.field == 'static_config':
+                if event.field == "static_config":
                     lr_related_role_removal(brain.getObject(), brain.review_state, {event.field: rem_rel_roles})
                 else:
                     related_role_removal(brain.getObject(), brain.review_state, rem_rel_roles, event.field)
     if add_rel_roles:
-        logger.info('Adding related roles: %s' % add_rel_roles)
+        logger.info("Adding related roles: %s" % add_rel_roles)
         for st in add_rel_roles:
             for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=st):
-                if event.field == 'static_config':
+                if event.field == "static_config":
                     lr_related_role_addition(brain.getObject(), brain.review_state, {event.field: add_rel_roles})
                 else:
                     related_role_addition(brain.getObject(), brain.review_state, add_rel_roles, event.field)

@@ -18,14 +18,11 @@ def get_localrole_fields(fti):
     Return field name and field object for each found field.
     """
     fti_schema = fti.lookupSchema()
-    fields = [(n, f) for n, f in fti_schema.namesAndDescriptions(all=True)
-              if IBaseLocalRoleField.providedBy(f)]
+    fields = [(n, f) for n, f in fti_schema.namesAndDescriptions(all=True) if IBaseLocalRoleField.providedBy(f)]
 
     # also lookup behaviors
     for behavior_id in fti.behaviors:
         behavior = getUtility(IBehavior, behavior_id).interface
-        fields.extend(
-            [(n, f) for n, f in behavior.namesAndDescriptions(all=True)
-             if IBaseLocalRoleField.providedBy(f)])
+        fields.extend([(n, f) for n, f in behavior.namesAndDescriptions(all=True) if IBaseLocalRoleField.providedBy(f)])
 
     return fields

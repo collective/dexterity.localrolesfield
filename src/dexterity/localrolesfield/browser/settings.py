@@ -18,24 +18,24 @@ from zope.schema import TextLine
 
 
 class ILocalRoleConfig(Interface):
-    state = WorkflowState(title=LRMF(u'state'), required=True)
+    state = WorkflowState(title=LRMF(u"state"), required=True)
 
-    value = TextLine(title=_(u'suffix'), required=False, default=u'')
+    value = TextLine(title=_(u"suffix"), required=False, default=u"")
 
-    roles = Role(title=LRMF(u'roles'),
-                 value_type=Choice(vocabulary='dexterity.localroles.vocabulary.SharingRolesVocabulary'),
-                 required=True)
+    roles = Role(
+        title=LRMF(u"roles"),
+        value_type=Choice(vocabulary="dexterity.localroles.vocabulary.SharingRolesVocabulary"),
+        required=True,
+    )
 
-    related = Text(title=LRMF(u'related role configuration'),
-                   required=False)
+    related = Text(title=LRMF(u"related role configuration"), required=False)
 
 
 RelatedFieldFormatValidator = RelatedFormatValidator
-validator.WidgetValidatorDiscriminators(RelatedFieldFormatValidator, field=ILocalRoleConfig['related'])
+validator.WidgetValidatorDiscriminators(RelatedFieldFormatValidator, field=ILocalRoleConfig["related"])
 
 
 class LocalRoleFieldConfigurationForm(LocalRoleConfigurationForm):
-
     @property
     def fields(self):
         fields = super(LocalRoleFieldConfigurationForm, self).fields
@@ -46,8 +46,7 @@ class LocalRoleFieldConfigurationForm(LocalRoleConfigurationForm):
                 __name__=str(name),
                 title=fti_field.title,
                 description=fti_field.description,
-                value_type=DictRow(title=u"fieldconfig",
-                                   schema=ILocalRoleConfig)
+                value_type=DictRow(title=u"fieldconfig", schema=ILocalRoleConfig),
             )
             schema_fields.append(f)
 
