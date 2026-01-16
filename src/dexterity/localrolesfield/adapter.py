@@ -12,7 +12,6 @@ from zope.schema._bootstrapinterfaces import RequiredMissing
 
 @implementer(ILocalRoleProvider)
 class LocalRoleFieldAdapter(object):
-
     def __init__(self, context):
         self.context = context
 
@@ -23,17 +22,15 @@ class LocalRoleFieldAdapter(object):
             config = self.get_config(field).get(self.current_state)
             if not config:
                 continue
-            suffixes = self._get_suffixes_for_principal(config, value,
-                                                        principal)
+            suffixes = self._get_suffixes_for_principal(config, value, principal)
             for suffix in suffixes:
-                roles.extend(config.get(suffix)['roles'])
+                roles.extend(config.get(suffix)["roles"])
 
         return tuple(roles)
 
     def _get_suffixes_for_principal(self, config, value, principal):
         """Return the suffixes that match the given principal"""
-        suffixes_principals = [(suffix, self._format_principal(value, suffix))
-                               for suffix in config.keys()]
+        suffixes_principals = [(suffix, self._format_principal(value, suffix)) for suffix in config.keys()]
         return [s for s, p in suffixes_principals if p == principal]
 
     def getAllRoles(self):
@@ -43,16 +40,16 @@ class LocalRoleFieldAdapter(object):
             if not state_config:
                 continue
             for suffix, roles_dic in state_config.items():
-                yield (self._format_principal(value, suffix), tuple(roles_dic['roles']))
+                yield (self._format_principal(value, suffix), tuple(roles_dic["roles"]))
 
     @staticmethod
     def _format_suffix(suffix):
         if not suffix:
-            return u''
-        return u'_{0}'.format(suffix)
+            return u""
+        return u"_{0}".format(suffix)
 
     def _format_principal(self, principal, suffix):
-        return u'{0}{1}'.format(principal, self._format_suffix(suffix))
+        return u"{0}{1}".format(principal, self._format_suffix(suffix))
 
     @property
     def field_and_values_list(self):
@@ -86,7 +83,7 @@ class LocalRoleFieldAdapter(object):
 
     def get_config(self, fieldname):
         """Return the config from FTI for a given fieldname"""
-        if not base_hasattr(self.fti, 'localroles'):
+        if not base_hasattr(self.fti, "localroles"):
             return {}
         return self.fti.localroles.get(fieldname, {})
 

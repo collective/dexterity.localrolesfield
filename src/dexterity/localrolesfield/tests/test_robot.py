@@ -6,5 +6,4 @@ from robotsuite import RobotTestSuite
 
 
 def test_suite():
-    return layered(RobotTestSuite('robot'),
-                   layer=testing.LOCALROLESFIELD_ROBOT)
+    return layered(RobotTestSuite("robot"), layer=testing.LOCALROLESFIELD_ROBOT)

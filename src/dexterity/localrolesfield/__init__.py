@@ -6,9 +6,9 @@ from zope.i18nmessageid import MessageFactory
 import logging
 
 
-_ = MessageFactory('dexterity.localrolesfield')
+_ = MessageFactory("dexterity.localrolesfield")
 
-logger = logging.getLogger('dexterity.localrolesfield')
+logger = logging.getLogger("dexterity.localrolesfield")
 HAS_PLONE_6 = int(api.env.plone_version()[0]) >= 6
 
 

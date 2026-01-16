@@ -23,26 +23,22 @@ import dexterity.localrolesfield as package
 class ITestingType(model.Schema):
 
     localrole_field = LocalRolesField(
-        title=u'localrolefield',
+        title=u"localrolefield",
         required=False,
-        value_type=Choice(vocabulary=SimpleVocabulary.fromValues([u'support',
-                                                                  u'mail'])),
+        value_type=Choice(vocabulary=SimpleVocabulary.fromValues([u"support", u"mail"])),
     )
 
     localrole_user_field = LocalRolesField(
-        title=u'localroleuserfield',
+        title=u"localroleuserfield",
         required=False,
-        value_type=Choice(vocabulary=SimpleVocabulary.fromValues([u'john',
-                                                                  u'jane',
-                                                                  u'tom',
-                                                                  u'kate'])),
+        value_type=Choice(vocabulary=SimpleVocabulary.fromValues([u"john", u"jane", u"tom", u"kate"])),
     )
 
 
 @implementer(ITestingType)
 class TestingType(Container):
 
-    localrole_field = FieldProperty(ITestingType[u'localrole_field'])
+    localrole_field = FieldProperty(ITestingType[u"localrole_field"])
 
 
 class ITestingBehavior(model.Schema):
@@ -50,11 +46,7 @@ class ITestingBehavior(model.Schema):
     mono_localrole_field = LocalRoleField(
         title=u"Mono valued local role field",
         required=False,
-        vocabulary=SimpleVocabulary.fromValues([
-            u'john',
-            u'jane',
-            u'tom',
-            u'kate'])
+        vocabulary=SimpleVocabulary.fromValues([u"john", u"jane", u"tom", u"kate"]),
     )
 
 
@@ -62,45 +54,45 @@ alsoProvides(ITestingBehavior, IFormFieldProvider)
 
 
 class LocalRolesFieldLayer(PloneWithPackageLayer):
-
     def setUp(self):
         super(LocalRolesFieldLayer, self).setUp()
         with ploneSite() as portal:
             groups_tool = portal.portal_groups
-            groups = {'mail_editor': ('john', 'jane'),
-                      'mail_reviewer': ('jane', 'tom'),
-                      'support_editor': ('kate', ),
-                      'support_reviewer': ('kate', )}
+            groups = {
+                "mail_editor": ("john", "jane"),
+                "mail_reviewer": ("jane", "tom"),
+                "support_editor": ("kate",),
+                "support_reviewer": ("kate",),
+            }
             for group_id in groups:
                 if group_id not in groups_tool.getGroupIds():
                     groups_tool.addGroup(group_id)
                 for user in groups[group_id]:
                     if not api.user.get(username=user):
-                        api.user.create(username=user, email='test@test.com')
+                        api.user.create(username=user, email="test@test.com")
                     api.group.add_user(groupname=group_id, username=user)
-            if not api.user.get(username='basic-user'):
-                api.user.create(username='basic-user', email='test@test.com')
+            if not api.user.get(username="basic-user"):
+                api.user.create(username="basic-user", email="test@test.com")
 
 
 LOCALROLESFIELD_FIXTURE = LocalRolesFieldLayer(
-    zcml_filename='testing.zcml',
+    zcml_filename="testing.zcml",
     zcml_package=package,
-    gs_profile_id='dexterity.localrolesfield:testing',
-    name='dexterity.localrolesfield.layer:fixture',
+    gs_profile_id="dexterity.localrolesfield:testing",
+    name="dexterity.localrolesfield.layer:fixture",
 )
 
 LOCALROLESFIELD_INTEGRATION = IntegrationTesting(
-    bases=(LOCALROLESFIELD_FIXTURE, ),
-    name='dexterity.localrolesfield.layer:integration',
+    bases=(LOCALROLESFIELD_FIXTURE,),
+    name="dexterity.localrolesfield.layer:integration",
 )
 
 LOCALROLESFIELD_FUNCTIONAL = FunctionalTesting(
-    bases=(LOCALROLESFIELD_FIXTURE, ),
-    name='dexterity.localrolesfield.layer:functional',
+    bases=(LOCALROLESFIELD_FIXTURE,),
+    name="dexterity.localrolesfield.layer:functional",
 )
 
 LOCALROLESFIELD_ROBOT = FunctionalTesting(
-    bases=(LOCALROLESFIELD_FIXTURE, AUTOLOGIN_LIBRARY_FIXTURE,
-           z2.ZSERVER_FIXTURE),
-    name='dexterity.localrolesfield.layer:robot',
+    bases=(LOCALROLESFIELD_FIXTURE, AUTOLOGIN_LIBRARY_FIXTURE, z2.ZSERVER_FIXTURE),
+    name="dexterity.localrolesfield.layer:robot",
 )
