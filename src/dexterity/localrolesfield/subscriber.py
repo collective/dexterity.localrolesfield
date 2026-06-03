@@ -8,6 +8,7 @@ from dexterity.localroles.utils import del_related_roles
 from dexterity.localroles.utils import del_related_uid
 from dexterity.localroles.utils import fti_configuration
 from dexterity.localroles.utils import get_state
+from dexterity.localroles.utils import register_affected_portal_type
 from dexterity.localrolesfield import logger
 from dexterity.localrolesfield.utils import get_localrole_fields
 from OFS.interfaces import IObjectWillBeAddedEvent
@@ -16,15 +17,42 @@ from plone import api
 from plone.dexterity.interfaces import IDexterityContainer
 from plone.dexterity.interfaces import IDexterityFTI
 from plone.memoize.interfaces import ICacheChooser
+from Products.ZCatalog.ProgressHandler import ZLogHandler as BaseZLogHandler
 from zope.component import getUtility
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
+
+import time
 
 
 try:
     from zope.component.interfaces import ComponentLookupError  # noqa
 except ImportError:
     from zope.interface.interfaces import ComponentLookupError
+
+
+class ZLogHandler(BaseZLogHandler):
+    """ZLogHandler keeping the init() ident as a prefix on every logged line.
+
+    The base ZLogHandler overrides output() and drops self._ident, so the
+    "Process started" / "Process terminated" lines are logged without any
+    context. We restore the prefix set in init().
+    """
+
+    def init(self, ident, max, savepoint=True):
+        self._ident = ident
+        self._max = max
+        self.savepoint = savepoint
+        self._start = time.time()
+        if max:
+            self.output('Process started (%d objects to go)' % self._max)
+
+    def output(self, text):
+        logger.info("{}: {}".format(self._ident, text))
+
+    def finish(self):
+        if self._max:
+            super(ZLogHandler, self).finish()
 
 
 def fti_modified(obj, event):
@@ -64,6 +92,7 @@ def related_role_removal(obj, state, field_config, name):
     if state in field_config:
         dic = field_config[state]
         uid = obj.UID()
+        defer_security_update = obj.REQUEST.get("DEFER_SECURITY_UPDATE", False)
         for suffix in dic:
             if dic[suffix].get("rel", ""):
                 related = eval(dic[suffix]["rel"])
@@ -74,13 +103,16 @@ def related_role_removal(obj, state, field_config, name):
                         princ = suffix and "%s_%s" % (val, suffix) or val
                         for rel in runRelatedSearch(utility, obj):
                             if del_related_roles(rel, uid, princ, related[utility]):
-                                rel.reindexObjectSecurity()
+                                register_affected_portal_type(obj.REQUEST, rel.portal_type)
+                                if not defer_security_update:
+                                    rel.reindexObjectSecurity()
 
 
 def related_role_addition(obj, state, field_config, name):
     if state in field_config:
         dic = field_config[state]
         uid = obj.UID()
+        defer_security_update = obj.REQUEST.get("DEFER_SECURITY_UPDATE", False)
         for suffix in dic:
             if dic[suffix].get("rel", ""):
                 related = eval(dic[suffix]["rel"])
@@ -91,7 +123,9 @@ def related_role_addition(obj, state, field_config, name):
                         princ = suffix and "%s_%s" % (val, suffix) or val
                         for rel in runRelatedSearch(utility, obj):
                             add_related_roles(rel, uid, princ, related[utility])
-                            rel.reindexObjectSecurity()
+                            register_affected_portal_type(obj.REQUEST, rel.portal_type)
+                            if not defer_security_update:
+                                rel.reindexObjectSecurity()
 
 
 def related_annot_removal(obj, state, field_config):
@@ -218,24 +252,42 @@ def local_role_related_configuration_updated(event):
     """
     only_reindex, rem_rel_roles, add_rel_roles = configuration_change_analysis(event)
     portal = api.portal.getSite()
-    if only_reindex:
-        logger.info("Objects security update")
-        for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=list(only_reindex)):
+    defer_security_update = portal.REQUEST.get("DEFER_SECURITY_UPDATE", False)
+    if only_reindex or rem_rel_roles or add_rel_roles:
+        register_affected_portal_type(portal.REQUEST, event.fti.__name__)
+    if only_reindex and not defer_security_update:
+        logger.info("Objects security update on type '{}' and states {}".format(event.fti.__name__, list(only_reindex)))
+        brains = portal.portal_catalog(portal_type=event.fti.__name__, review_state=list(only_reindex))
+        pghandler = ZLogHandler(steps=1000)
+        pghandler.init("{}: reindexing security".format(event.fti.__name__), len(brains))
+        for i, brain in enumerate(brains):
+            pghandler.report(i)
             obj = brain.getObject()
             obj.reindexObjectSecurity()
+        pghandler.finish()
     if rem_rel_roles:
-        logger.info("Removing related roles: %s" % rem_rel_roles)
+        logger.info("Removing related roles on type '%s': %s" % (event.fti.__name__, rem_rel_roles))
         for st in rem_rel_roles:
-            for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=st):
+            brains = portal.portal_catalog(portal_type=event.fti.__name__, review_state=st)
+            pghandler = ZLogHandler(steps=1000)
+            pghandler.init("{}: removing related roles for state '{}'".format(event.fti.__name__, st), len(brains))
+            for i, brain in enumerate(brains):
+                pghandler.report(i)
                 if event.field == "static_config":
                     lr_related_role_removal(brain.getObject(), brain.review_state, {event.field: rem_rel_roles})
                 else:
                     related_role_removal(brain.getObject(), brain.review_state, rem_rel_roles, event.field)
+            pghandler.finish()
     if add_rel_roles:
-        logger.info("Adding related roles: %s" % add_rel_roles)
+        logger.info("Adding related roles on type '%s': %s" % (event.fti.__name__, add_rel_roles))
         for st in add_rel_roles:
-            for brain in portal.portal_catalog(portal_type=event.fti.__name__, review_state=st):
+            brains = portal.portal_catalog(portal_type=event.fti.__name__, review_state=st)
+            pghandler = ZLogHandler(steps=1000)
+            pghandler.init("{}: adding related roles for state '{}'".format(event.fti.__name__, st), len(brains))
+            for i, brain in enumerate(brains):
+                pghandler.report(i)
                 if event.field == "static_config":
                     lr_related_role_addition(brain.getObject(), brain.review_state, {event.field: add_rel_roles})
                 else:
                     related_role_addition(brain.getObject(), brain.review_state, add_rel_roles, event.field)
+            pghandler.finish()
