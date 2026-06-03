@@ -8,6 +8,10 @@ Changelog
   [sgeulette]
 - Used custom ZLogHandler.
   [sgeulette]
+- Improved security of ‘related’ field by restricting its value to JSON.
+  [sgeulette]
+- Corrected tests setup
+  [sgeulette]
 
 2.0.0b0 (2026-01-15)
 --------------------
