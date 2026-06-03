@@ -22,6 +22,7 @@ from zope.component import getUtility
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
+import json
 import time
 
 
@@ -95,7 +96,7 @@ def related_role_removal(obj, state, field_config, name):
         defer_security_update = obj.REQUEST.get("DEFER_SECURITY_UPDATE", False)
         for suffix in dic:
             if dic[suffix].get("rel", ""):
-                related = eval(dic[suffix]["rel"])
+                related = json.loads(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
@@ -115,7 +116,7 @@ def related_role_addition(obj, state, field_config, name):
         defer_security_update = obj.REQUEST.get("DEFER_SECURITY_UPDATE", False)
         for suffix in dic:
             if dic[suffix].get("rel", ""):
-                related = eval(dic[suffix]["rel"])
+                related = json.loads(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
@@ -134,7 +135,7 @@ def related_annot_removal(obj, state, field_config):
         uid = obj.UID()
         for suffix in dic:
             if dic[suffix].get("rel", ""):
-                related = eval(dic[suffix]["rel"])
+                related = json.loads(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
@@ -247,7 +248,7 @@ def related_change_on_moved(obj, event):
 def local_role_related_configuration_updated(event):
     """Local roles configuration modification: we have to compare old and new values.
 
-    event.old_value is like : {'private': {'raptor': {'rel': "{'dexterity.localroles.related_parent': ['Editor']}",
+    event.old_value is like : {'private': {'raptor': {'rel': '{"dexterity.localroles.related_parent": ["Editor"]}',
                                                       'roles': ('Reader',)}}}
     """
     only_reindex, rem_rel_roles, add_rel_roles = configuration_change_analysis(event)
