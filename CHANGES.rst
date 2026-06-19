@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0b1 (unreleased)
+2.0.0b1 (2026-06-19)
 --------------------
 
 - Defered security update following request parameter DEFER_SECURITY_UPDATE.
