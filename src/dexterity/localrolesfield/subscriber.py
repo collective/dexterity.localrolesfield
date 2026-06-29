@@ -22,7 +22,7 @@ from zope.component import getUtility
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
-import json
+import ast
 import time
 
 
@@ -96,7 +96,7 @@ def related_role_removal(obj, state, field_config, name):
         defer_security_update = obj.REQUEST.get("DEFER_SECURITY_UPDATE", False)
         for suffix in dic:
             if dic[suffix].get("rel", ""):
-                related = json.loads(dic[suffix]["rel"])
+                related = ast.literal_eval(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
@@ -116,7 +116,7 @@ def related_role_addition(obj, state, field_config, name):
         defer_security_update = obj.REQUEST.get("DEFER_SECURITY_UPDATE", False)
         for suffix in dic:
             if dic[suffix].get("rel", ""):
-                related = json.loads(dic[suffix]["rel"])
+                related = ast.literal_eval(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
@@ -135,7 +135,7 @@ def related_annot_removal(obj, state, field_config):
         uid = obj.UID()
         for suffix in dic:
             if dic[suffix].get("rel", ""):
-                related = json.loads(dic[suffix]["rel"])
+                related = ast.literal_eval(dic[suffix]["rel"])
                 for utility in related:
                     if not related[utility]:
                         continue
