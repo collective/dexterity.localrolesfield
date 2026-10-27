@@ -4,7 +4,8 @@ Changelog
 2.0.0b3 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Deferred objects security reindex in local roles configuration form when `DEFER_SECURITY_UPDATE` env var is set.
+  [sgeulette]
 
 
 2.0.0b2 (2026-08-14)

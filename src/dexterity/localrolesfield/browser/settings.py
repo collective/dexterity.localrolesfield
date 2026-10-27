@@ -7,7 +7,9 @@ from dexterity.localroles.browser.settings import LocalRoleList
 from dexterity.localroles.browser.settings import RelatedFormatValidator
 from dexterity.localroles.browser.settings import Role
 from dexterity.localroles.browser.settings import WorkflowState
+from dexterity.localroles.utils import get_affected_portal_types
 from dexterity.localrolesfield import _
+from dexterity.localrolesfield import logger
 from dexterity.localrolesfield.utils import get_localrole_fields
 from z3c.form import field
 from z3c.form import validator
@@ -15,6 +17,8 @@ from zope.interface import Interface
 from zope.schema import Choice
 from zope.schema import Text
 from zope.schema import TextLine
+
+import os
 
 
 class ILocalRoleConfig(Interface):
@@ -36,6 +40,16 @@ validator.WidgetValidatorDiscriminators(RelatedFieldFormatValidator, field=ILoca
 
 
 class LocalRoleFieldConfigurationForm(LocalRoleConfigurationForm):
+    def update(self):
+        # DEFER_SECURITY_UPDATE env var: skip objects security reindex, to be done in a separate batch
+        defer_security_update = os.environ.get("DEFER_SECURITY_UPDATE")
+        if defer_security_update:
+            self.request.set("DEFER_SECURITY_UPDATE", True)
+        super(LocalRoleFieldConfigurationForm, self).update()
+        types = defer_security_update and get_affected_portal_types(self.request)
+        if types:
+            logger.warn("DEFER_SECURITY_UPDATE: security not reindexed on %s" % sorted(types))
+
     @property
     def fields(self):
         fields = super(LocalRoleFieldConfigurationForm, self).fields
